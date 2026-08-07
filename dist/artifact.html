@@ -1,9 +1,3 @@
-<!doctype html>
-<html lang="fa" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>محاسبه‌گر بهای تمام‌شده واردات آرایشی — دبی ← بندرعباس ← تهران</title>
 <style>
 /* ---------- tokens: light is the base, dark redefined under both scopes ---------- */
 :root{
@@ -58,6 +52,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
+  direction:rtl;
   background:var(--plane);
   color:var(--ink);
   font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
@@ -204,8 +199,7 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
   .card{break-inside:avoid;border-color:#ccc}
 }
 </style>
-</head>
-<body>
+
 <div class="wrap">
 
 <header class="top">
@@ -230,8 +224,8 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
   <h2>۱ · نرخ ارز <span style="font-weight:400;color:var(--muted);font-size:12px">— بازار آزاد</span></h2>
 
   <div class="fxbar noprint">
-    <button type="button" id="fetchBtn" class="primary">به‌روزرسانی خودکار نرخ</button>
-    <span class="chip" id="fxChip"><span class="dot warn"></span><span id="fxChipText">نرخ نمونه — هنوز به‌روزرسانی نشده</span></span>
+    <span class="chip" id="fetchBtn" style="cursor:default">دریافت خودکار در این نسخه غیرفعال است</span>
+    <span class="chip" id="fxChip"><span class="dot warn"></span><span id="fxChipText">نرخ نمونه — لطفاً نرخ روز را وارد کنید</span></span>
   </div>
 
   <div class="fields">
@@ -265,7 +259,7 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
   <div class="note" id="fxNote">
     <strong>مهم:</strong> سرویس‌های عمومی ارز (مثل exchangerate یا Google) نرخ <strong>رسمی</strong> ریال را می‌دهند، نه نرخ
     <strong>بازار آزاد</strong>. اگر بهای تمام‌شده را با نرخ رسمی حساب کنید، عدد چند برابر کمتر از واقعیت درمی‌آید.
-    این ابزار فقط نرخ آزاد را مبنا می‌گیرد — اگر به‌روزرسانی خودکار جواب نداد، نرخ را دستی از صرافی وارد کنید.
+    این ابزار فقط نرخ آزاد را مبنا می‌گیرد. <strong>در این نسخه تحت وب، دریافت خودکار نرخ ممکن نیست</strong> (صفحه اجازه درخواست به سرویس بیرونی ندارد)؛ نرخ روز را از صرافی بگیرید و در کادر بالا وارد کنید. نسخه <code>index.html</code> داخل مخزن، دکمه دریافت خودکار هم دارد.
   </div>
 </section>
 
@@ -827,7 +821,7 @@ function bindInputs(){
     });
   });
 
-  document.getElementById("fetchBtn").addEventListener("click", fetchRates);
+  /* دریافت خودکار در نسخه منتشرشده غیرفعال است */
   document.getElementById("addRow").addEventListener("click", () => {
     state.rows.push(row("کالای جدید", 0, 0, 0, 0, 0, 0, 12, 60));
     save(); renderInputs(); render();
@@ -1458,5 +1452,3 @@ let rt;
 addEventListener("resize", ()=>{ clearTimeout(rt); rt = setTimeout(render, 140); });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>render());
 </script>
-</body>
-</html>
