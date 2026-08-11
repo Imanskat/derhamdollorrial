@@ -603,9 +603,13 @@ function compute(st){
   const pRate = num(st.purchaseAedIrr) || num(fx.aedIrr);
   const cRate = num(fx.aedIrr);
   t.purchaseRate = pRate;
-  // Σ(A_i·q_i)·Δنرخ ⇒ اختلاف بهای تمام‌شده اگر همین محموله امروز دوباره خریداری شود
+  // بهای تمام‌شده با نرخ *امروز* حساب می‌شود، پس profitTot از همان ابتدا
+  // «سود بر مبنای جایگزینی» است — یعنی سود واقعیِ قابل برداشت.
+  // Σ(A_i·q_i)·Δنرخ = اختلاف بهای تمام‌شده بین نرخ روز خرید و نرخ امروز.
   t.replacementDelta = (cRate - pRate) * sumA;
-  t.profitAtReplacement = t.profitTot - t.replacementDelta;
+  // سود دفتری = اگر محموله را با همان نرخی که واقعاً خریده‌اید ارزش‌گذاری کنیم.
+  // اگر ریال ضعیف شده باشد این عدد بزرگ‌تر از سود واقعی است.
+  t.bookProfit = t.profitTot + t.replacementDelta;
 
   return {rows, t};
 }
@@ -992,21 +996,29 @@ function renderFxRisk(){
     const n = document.createElement(bold?"strong":"span"); n.textContent = s; return n;
   };
 
+  const U = unitInfo().label;
+
   if(Math.abs(cRate-pRate)/Math.max(pRate,1) < 0.005){
     el.append(mk("ریسک ارزی: ", true),
       mk("نرخ روز خرید با نرخ امروز یکی است، پس سود دفتری و سود واقعی برابرند. "),
       mk("اگر تا فروش کامل «"+FA.format(Math.round(t.avgDays))+" روز» فاصله دارید، این عدد را دوباره چک کنید — تفاوت نرخ در همین فاصله سود را جابه‌جا می‌کند."));
     return;
   }
-  const up = cRate > pRate;
+
   el.append(mk("ریسک ارزی: ", true));
   el.append(mk("این محموله با درهم "+rate(pRate)+" ریال خریداری شده و نرخ امروز "+rate(cRate)+" ریال است. "));
-  if(up){
-    el.append(mk("سود دفتری شما "+moneyCompact(t.profitTot)+" "+unitInfo().label+" است، اما اگر بخواهید همین محموله را با نرخ امروز دوباره بخرید، "),
-      mk(moneyCompact(Math.abs(t.replacementDelta))+" "+unitInfo().label+" گران‌تر تمام می‌شود", true),
-      mk(" — یعنی سود واقعیِ قابل‌سرمایه‌گذاری‌مجدد حدود "+moneyCompact(t.profitAtReplacement)+" "+unitInfo().label+" است."));
+  el.append(mk("همه اعداد بالا با نرخ امروز حساب شده‌اند، یعنی سود جایگزینی. "));
+
+  if(cRate > pRate){
+    el.append(
+      mk("اگر همین محموله را با نرخ روز خرید ارزش‌گذاری کنید، سود دفتری "+moneyCompact(t.bookProfit)+" "+U+" می‌شود؛ "),
+      mk("اما جایگزینی آن با نرخ امروز "+moneyCompact(Math.abs(t.replacementDelta))+" "+U+" گران‌تر تمام می‌شود", true),
+      mk(" — پس سود واقعیِ قابل‌سرمایه‌گذاری‌مجدد همان "+moneyCompact(t.profitTot)+" "+U+" است، نه عدد دفتری."));
   }else{
-    el.append(mk("چون نرخ پایین آمده، جایگزینی محموله ارزان‌تر تمام می‌شود و سود واقعی حدود "+moneyCompact(t.profitAtReplacement)+" "+unitInfo().label+" است."));
+    el.append(
+      mk("چون نرخ پایین آمده، جایگزینی محموله ارزان‌تر تمام می‌شود: سود دفتری "+moneyCompact(t.bookProfit)+" "+U+" است، "),
+      mk("اما سود واقعی با نرخ امروز "+moneyCompact(t.profitTot)+" "+U, true),
+      mk(" — یعنی بیشتر از چیزی که دفترها نشان می‌دهند."));
   }
 }
 

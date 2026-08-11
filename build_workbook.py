@@ -395,10 +395,17 @@ put(q, f"B{r}", f"=({R_AED}-{R_BUY})*{K}$AE${TOT}", GREEN, RIAL, None, True)
 put(q, f"C{r}", f"=$B{r}/10", BLACK, RIAL, None, True)
 put(q, f"D{r}", "اگر همین محموله را امروز دوباره بخرید، این مبلغ گران‌تر تمام می‌شود.", SMALL); r += 1
 
-put(q, f"A{r}", "سود واقعی پس از جایگزینی محموله", BLACK, None, None, True)
-put(q, f"B{r}", f"={K}$Y${TOT}-({R_AED}-{R_BUY})*{K}$AE${TOT}", GREEN, RIAL, None, True)
+# بهای تمام‌شده با نرخ امروز حساب می‌شود، پس سود ستون Y از ابتدا «سود جایگزینی» است.
+# سود دفتری = همان سود + اختلاف نرخ (اگر ریال ضعیف شده باشد، بزرگ‌تر به نظر می‌رسد).
+put(q, f"A{r}", "سود دفتری (بر مبنای نرخ روز خرید)", BLACK, None, None, True)
+put(q, f"B{r}", f"={K}$Y${TOT}+({R_AED}-{R_BUY})*{K}$AE${TOT}", GREEN, RIAL, None, True)
 put(q, f"C{r}", f"=$B{r}/10", BLACK, RIAL, None, True)
-put(q, f"D{r}", "سودی که واقعاً قابل برداشت است، نه سود دفتری.", SMALL); r += 2
+put(q, f"D{r}", "عددی که دفترها نشان می‌دهند — با نرخی که واقعاً پرداخت کرده‌اید.", SMALL); r += 1
+
+put(q, f"A{r}", "سود واقعی (بر مبنای نرخ امروز)", BLACK, None, None, True)
+put(q, f"B{r}", f"={K}$Y${TOT}", GREEN, RIAL, None, True)
+put(q, f"C{r}", f"=$B{r}/10", BLACK, RIAL, None, True)
+put(q, f"D{r}", "سودی که پس از خرید دوباره همان مقدار جنس واقعاً باقی می‌ماند.", SMALL); r += 2
 
 # --- تحلیل حساسیت
 put(q, f"A{r}", "حساسیت سود به نرخ درهم", SECT); r += 1
