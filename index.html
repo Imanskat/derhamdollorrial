@@ -198,10 +198,92 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
   .tile .v{font-size:19px}
   .charts{grid-template-columns:1fr}
 }
+/* ---------- چاپ و خروجی PDF ---------- */
+@page{ size:A4 portrait; margin:12mm 10mm; }
+
+.printonly{display:none}
+
 @media print{
-  body{background:#fff}
-  .noprint{display:none!important}
-  .card{break-inside:avoid;border-color:#ccc}
+  /* روی کاغذ همیشه پالت روشن، حتی اگر کاربر حالت تیره را انتخاب کرده باشد */
+  :root,:root[data-theme="dark"]{
+    --plane:#fff; --surface:#fff; --surface-2:#f5f5f3;
+    --ink:#000; --ink-2:#2b2b2b; --muted:#5c5c5c;
+    --grid:#dedede; --axis:#9a9a9a; --border:rgba(0,0,0,.20);
+    --good-text:#006300;
+  }
+  html,body{background:#fff!important}
+  body{padding:0;font-size:9.5pt;line-height:1.4}
+  .wrap{max-width:none}
+
+  /* چیزهایی که روی کاغذ معنا ندارند */
+  .noprint,#tip,details.tv summary,#navasanField{display:none!important}
+  .printonly{display:block}
+
+  #printMeta{
+    font-size:8pt;color:#2b2b2b;
+    border-bottom:1px solid #bdbdb8;
+    padding-bottom:5px;margin:0 0 10px;
+  }
+
+  .card{
+    break-inside:avoid;page-break-inside:avoid;
+    border:1px solid #cfcfc9;border-radius:5px;
+    padding:9px 11px;margin:0 0 8px;
+  }
+  header.top{margin-bottom:8px}
+  h1{font-size:15pt;margin-bottom:1px}
+  h2{font-size:10.5pt;margin-bottom:7px}
+  .sub{font-size:8.5pt}
+
+  /* ورودی‌ها باید مثل متن دیده شوند، نه مثل کادر فرم */
+  input,select{
+    border:0!important;background:transparent!important;
+    padding:0!important;color:#000!important;
+    font-size:9.5pt!important;-webkit-appearance:none;appearance:none;
+  }
+  .fields{gap:7px 12px}
+  .f label{font-size:8pt}
+  .f .hint{font-size:7pt}
+
+  /* مهم‌ترین اصلاح: روی کاغذ اسکرول وجود ندارد، پس overflow ستون‌ها را می‌بُرد */
+  .scroll{overflow:visible!important}
+  table{font-size:7.5pt;width:100%;table-layout:fixed}
+  table input{width:100%;min-width:0!important;font-size:7.5pt!important}
+  th,td{
+    padding:3px;white-space:normal;overflow-wrap:anywhere;
+    border-bottom:1px solid #e3e3e0;
+  }
+  th{font-size:7pt;background:#eeeeec!important}
+  thead{display:table-header-group}          /* تکرار سربرگ در صفحه بعد */
+  tr{break-inside:avoid}
+  /* <input> متن را نمی‌شکند و فقط می‌بُرد. روی کاغذ به‌جای خود ورودی،
+     مقدارش را به شکل متن معمولی چاپ می‌کنیم تا نام کامل و شکسته دیده شود. */
+  #inBody td input{display:none}
+  #inBody td::after{
+    content:attr(data-print);
+    display:block;white-space:normal;overflow-wrap:anywhere;
+  }
+  #inTable th:first-child,#inTable td:first-child{width:19%}
+  #outTable th:first-child,#outTable td:first-child{width:15%}
+
+  .tiles{grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+  .tile{padding:7px 9px;border:1px solid #d8d8d3;break-inside:avoid}
+  .tile .k{font-size:7.5pt;margin-bottom:2px}
+  .tile .v{font-size:12.5pt}
+  .tile .u{font-size:7pt}
+
+  .charts{grid-template-columns:1fr!important;gap:8px}
+  svg.viz{height:auto!important}             /* جلوگیری از حاشیه خالی بالا و پایین */
+  .legend{margin:6px 0 2px}
+  .legend .item{font-size:7.5pt}
+  .chart-head .t{font-size:10pt}
+  .chart-head .d{font-size:7.5pt}
+
+  .note{padding:6px 9px;font-size:8pt;border-inline-start-width:2px}
+  footer{font-size:7.5pt;padding:10px 0 0;color:#3a3a3a}
+
+  /* بدون این، مرورگر نمودارها و کاشی‌ها را سفید چاپ می‌کند */
+  svg,.tile,.note,th,.card{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -224,6 +306,8 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
     <button type="button" id="csvBtn" class="ghost">خروجی CSV</button>
   </div>
 </header>
+
+<div class="printonly" id="printMeta"></div>
 
 <!-- ============ FX ============ -->
 <section class="card">
@@ -255,7 +339,7 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
       <input type="number" id="purchaseAedIrr" step="1000" min="0">
       <span class="hint">برای سنجش ریسک ارزی: سود واقعی با نرخ امروز مقایسه می‌شود</span>
     </div>
-    <div class="f">
+    <div class="f" id="navasanField">
       <label for="navasanKey">کلید API نوسان (اختیاری)</label>
       <input type="text" id="navasanKey" placeholder="navasan.tech API key" autocomplete="off">
       <span class="hint">مطمئن‌ترین منبع نرخ آزاد. بدون کلید، منابع عمومی امتحان می‌شوند</span>
@@ -418,7 +502,7 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
 </div>
 
 <footer>
-  همه اعداد در مرورگر شما محاسبه و ذخیره می‌شوند — چیزی به سروری فرستاده نمی‌شود.<br>
+  <span class="noprint">همه اعداد در مرورگر شما محاسبه و ذخیره می‌شوند — چیزی به سروری فرستاده نمی‌شود.<br></span>
   مقادیر پیش‌فرض <strong>نمونه</strong> هستند؛ قبل از تصمیم‌گیری، نرخ ارز و تعرفه گمرکی را با صرافی و ترخیص‌کار خود تأیید کنید.
 </footer>
 
@@ -858,7 +942,7 @@ function bindInputs(){
     else document.documentElement.removeAttribute("data-theme");
     render();
   });
-  document.getElementById("printBtn").addEventListener("click", ()=>window.print());
+  document.getElementById("printBtn").addEventListener("click", ()=>{ enterPrint(); window.print(); });
   document.getElementById("csvBtn").addEventListener("click", exportCsv);
 }
 
@@ -913,9 +997,26 @@ function renderInputs(){
    ======================================================================= */
 let model = null;
 
+// خط بالای برگه چاپی: بدون این، معلوم نیست برگه با چه نرخی و چه روزی درآمده
+function renderPrintMeta(){
+  const box = document.getElementById("printMeta");
+  if(!box) return;
+  const f = state.fx;
+  const src = f.placeholder ? "نرخ نمونه — تأیید نشده" : (f.source || "ورود دستی");
+  const when = f.fetchedAt ? new Date(f.fetchedAt).toLocaleString("fa-IR") : "—";
+  const n = state.rows.filter(r => (r.name||"").trim()).length;
+  box.textContent =
+    "تاریخ چاپ: " + new Date().toLocaleString("fa-IR") +
+    "   ·   نرخ درهم: " + rate(num(f.aedIrr)) + " ریال (" + src + "، " + when + ")" +
+    "   ·   دلار: " + rate(num(f.usdIrr)) + " ریال" +
+    "   ·   " + FA.format(n) + " قلم کالا" +
+    "   ·   ارقام به " + unitInfo().label;
+}
+
 function render(){
   model = compute(state);
   refreshFxChip();
+  renderPrintMeta();
   renderTiles();
   renderOutTable();
   renderFxRisk();
@@ -1054,7 +1155,13 @@ function el(name, attrs={}, parent){
   return n;
 }
 function clear(svg){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
-function svgW(svg){ return Math.max(340, svg.getBoundingClientRect().width || 460); }
+// هنگام چاپ، عرض واقعیِ روی صفحه معیار نیست — عرض کاغذ A4 معیار است،
+// وگرنه نمودارِ پهنِ صفحه روی کاغذ کوچک و کج‌وکوله می‌افتد.
+let PRINT_W = 0;
+function svgW(svg){
+  if(PRINT_W) return PRINT_W;
+  return Math.max(340, svg.getBoundingClientRect().width || 460);
+}
 
 function tipBox(title, lines){
   const f = document.createDocumentFragment();
@@ -1466,8 +1573,42 @@ document.querySelectorAll("[data-unit]").forEach(b =>
   b.setAttribute("aria-pressed", String(b.dataset.unit===state.unit)));
 render();
 
+/* نمودارها با رنگ‌های تمِ جاری کشیده می‌شوند، پس اگر کاربر حالت تیره داشته
+   باشد رنگ‌های تیره روی کاغذ سفید چاپ می‌شوند. قبل از چاپ تم را روشن می‌کنیم،
+   نمودارها را با عرض کاغذ دوباره می‌کشیم و بعد از چاپ همه‌چیز را برمی‌گردانیم. */
+let themeBeforePrint = null, printing = false;
+
+// مقدار هر ورودی را روی خانه‌اش می‌نویسیم تا CSS بتواند به‌جای
+// کادر فرم، متنِ قابل‌شکستن چاپ کند.
+function syncPrintCells(){
+  document.querySelectorAll("#inBody td").forEach(td => {
+    const i = td.querySelector("input");
+    if(i) td.setAttribute("data-print", i.value);
+  });
+}
+
+function enterPrint(){
+  if(printing) return;
+  printing = true;
+  syncPrintCells();
+  themeBeforePrint = document.documentElement.getAttribute("data-theme");
+  document.documentElement.setAttribute("data-theme", "light");
+  PRINT_W = 700;                      // ≈ عرض مفید A4 با حاشیه ۱۰ میلی‌متر
+  render();
+}
+function exitPrint(){
+  if(!printing) return;
+  printing = false;
+  if(themeBeforePrint) document.documentElement.setAttribute("data-theme", themeBeforePrint);
+  else document.documentElement.removeAttribute("data-theme");
+  PRINT_W = 0;
+  render();
+}
+addEventListener("beforeprint", enterPrint);
+addEventListener("afterprint", exitPrint);
+
 let rt;
-addEventListener("resize", ()=>{ clearTimeout(rt); rt = setTimeout(render, 140); });
+addEventListener("resize", ()=>{ if(printing) return; clearTimeout(rt); rt = setTimeout(render, 140); });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>render());
 </script>
 </body>
