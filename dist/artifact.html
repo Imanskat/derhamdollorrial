@@ -182,6 +182,16 @@ text{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;unicode-bi
 #tip .tr .vl{font-variant-numeric:tabular-nums}
 .hit{cursor:crosshair}
 
+#toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:60;
+  max-width:min(460px,92vw);
+  background:var(--ink);color:var(--plane);
+  padding:10px 15px;border-radius:9px;font-size:12.5px;line-height:1.55;
+  box-shadow:0 8px 26px rgba(0,0,0,.24);
+  opacity:0;pointer-events:none;transition:opacity .18s;
+}
+#toast.show{opacity:1}
+
 details.tv{margin-top:12px}
 details.tv summary{cursor:pointer;font-size:12px;color:var(--ink-2);padding:4px 0}
 details.tv summary:hover{color:var(--ink)}
@@ -211,7 +221,7 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
   .wrap{max-width:none}
 
   /* چیزهایی که روی کاغذ معنا ندارند */
-  .noprint,#tip,details.tv summary,#navasanField{display:none!important}
+  .noprint,#tip,#toast,details.tv summary,#navasanField{display:none!important}
   .printonly{display:block}
 
   #printMeta{
@@ -1549,12 +1559,55 @@ function exportCsv(){
   lines.push(`"منبع نرخ","${state.fx.source||"ورود دستی"}"`);
   lines.push(`"تاریخ خروجی","${new Date().toLocaleString("fa-IR")}"`);
 
-  const blob = new Blob(["﻿"+lines.join("\r\n")], {type:"text/csv;charset=utf-8"});
+  saveFile("بهای-تمام-شده-واردات.csv", "﻿"+lines.join("\r\n"));
+}
+
+/* ذخیره فایل در دو محیط متفاوت:
+   - فایل محلی index.html: لینک معمولی مرورگر کار می‌کند.
+   - صفحه منتشرشده روی claude.ai: لینک دانلود بی‌اثر است و باید از
+     مسیر مجاز خود صفحه رد شویم، که از کاربر تأیید می‌گیرد. */
+async function saveFile(filename, text){
+  const dl = (window.claude && window.claude.downloads) || null;
+
+  if(dl){
+    try{
+      await dl.save({filename, data:text});
+      return;
+    }catch(err){
+      const code = err && err.code;
+      if(code === "declined") return;                 // کاربر خودش نخواست
+      if(code === "extension_not_enabled"){
+        // پسوند csv همه‌جا مجاز نیست؛ همان محتوا را با پسوند txt می‌دهیم
+        try{
+          await dl.save({filename: filename.replace(/\.csv$/i, ".txt"), data:text});
+          toast("فایل با پسوند txt ذخیره شد. برای باز کردن در اکسل، پسوند آن را به csv تغییر دهید.");
+          return;
+        }catch(e2){
+          if(e2 && e2.code === "declined") return;
+        }
+      }
+      if(code === "too_large"){  toast("حجم فایل بیش از حد مجاز است."); return; }
+      if(code === "rate_limited"){ toast("چند لحظه صبر کنید و دوباره بزنید."); return; }
+      toast("ذخیره فایل در این نسخه ممکن نیست؛ از فایل index.html روی رایانه استفاده کنید.");
+      return;
+    }
+  }
+
+  const blob = new Blob([text], {type:"text/csv;charset=utf-8"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "بهای-تمام-شده-واردات.csv";
+  a.download = filename;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+}
+
+function toast(msg){
+  let t = document.getElementById("toast");
+  if(!t){ t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove("show"), 5600);
 }
 
 /* =======================================================================
