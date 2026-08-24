@@ -197,6 +197,35 @@ text{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;unicode-bi
 }
 #toast.show{opacity:1}
 
+details.learn{
+  margin-top:12px;border:1px solid var(--border);border-radius:8px;
+  background:var(--surface-2);overflow:hidden;
+}
+details.learn + details.learn{margin-top:8px}
+details.learn > summary{
+  cursor:pointer;list-style:none;padding:8px 12px;
+  font-size:12.5px;font-weight:600;color:var(--ink-2);
+  display:flex;align-items:center;gap:7px;
+}
+details.learn > summary::-webkit-details-marker{display:none}
+details.learn > summary::before{
+  content:"؟";width:17px;height:17px;border-radius:50%;flex:none;
+  background:var(--s1);color:#fff;font-size:11px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+details.learn > summary:hover{color:var(--ink)}
+details.learn[open] > summary{border-bottom:1px solid var(--border)}
+details.learn .body{padding:11px 13px;font-size:12.5px;line-height:1.8;color:var(--ink-2)}
+details.learn .body strong{color:var(--ink)}
+details.learn .body p{margin:0 0 9px}
+details.learn .body p:last-child{margin:0}
+details.learn .ex{
+  margin-top:10px;padding:9px 11px;border-radius:6px;
+  background:var(--surface);border:1px solid var(--border);
+  font-size:12px;color:var(--ink-2);
+}
+details.learn .ex b{color:var(--ink)}
+
 details.tv{margin-top:12px}
 details.tv summary{cursor:pointer;font-size:12px;color:var(--ink-2);padding:4px 0}
 details.tv summary:hover{color:var(--ink)}
@@ -226,7 +255,7 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
   .wrap{max-width:none}
 
   /* چیزهایی که روی کاغذ معنا ندارند */
-  .noprint,#tip,#toast,details.tv summary,#navasanField{display:none!important}
+  .noprint,#tip,#toast,details.learn,details.tv summary,#navasanField{display:none!important}
   .printonly{display:block}
 
   #printMeta{
@@ -273,7 +302,10 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
     content:attr(data-print);
     display:block;white-space:normal;overflow-wrap:anywhere;
   }
-  #inTable th:first-child,#inTable td:first-child{width:19%}
+  /* جدول کالاها ۱۳ ستون دارد؛ کمی ریزتر تا عددهای ۸ رقمی وسط عدد نشکنند */
+  #inTable{font-size:6.8pt}
+  #inTable td::after,#inTable th{font-size:6.8pt}
+  #inTable th:first-child,#inTable td:first-child{width:16%}
   #outTable th:first-child,#outTable td:first-child{width:15%}
 
   .tiles{grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
@@ -381,6 +413,11 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
       <span class="hint">روی ارزش CIF. برای آرایشی معمولاً بالاست — از ترخیص‌کار بگیرید</span>
     </div>
     <div class="f">
+      <label for="customsUpliftPct">ضریب ارزش گمرکی (٪ بالاتر از فاکتور)</label>
+      <input type="number" id="customsUpliftPct" step="1" min="0">
+      <span class="hint">اگر گمرک ارزش را بالاتر از فاکتور شما می‌بندد. صفر = فاکتور مبناست</span>
+    </div>
+    <div class="f">
       <label for="inlandPerKgIrr">حمل بندرعباس ← تهران (ریال بر کیلو)</label>
       <input type="number" id="inlandPerKgIrr" step="1000" min="0">
     </div>
@@ -414,6 +451,28 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
       <span class="hint">اگر ثبت‌نام مالیاتی دارید، VAT پرداختی گمرک با VAT فروش تهاتر می‌شود و هزینه نیست</span>
     </div>
   </div>
+
+  <details class="learn">
+    <summary>ارزش گمرکی چیست و چرا با فاکتور من فرق دارد؟</summary>
+    <div class="body">
+      <p>گمرک لزوماً فاکتور شما را مبنا قرار نمی‌دهد. برای بسیاری از کالاها — از جمله لوازم آرایشی —
+      ارزش‌گذاری خودش را دارد، و اگر ارزش اعلامی شما را پایین بداند، <strong>حقوق ورودی و ارزش افزوده
+      را روی عدد بالاترِ خودش می‌بندد</strong>، نه روی چیزی که واقعاً پرداخت کرده‌اید.</p>
+
+      <p>چرا مهم است: حقوق ورودی بعد از خودِ کالا بزرگ‌ترین جزء بهای تمام‌شده است. هر خطایی در پایه آن،
+      چند برابر در سود نهایی ظاهر می‌شود.</p>
+
+      <p><strong>چطور پرش کنید:</strong> اگر ترخیص‌کارتان عدد دقیق هر کالا را می‌داند، آن را در ستون
+      «ارزش گمرکی هر واحد» جدول کالاها بنویسید. اگر فقط تخمین کلی دارید («معمولاً حدود ۲۵ درصد بالاتر
+      می‌بندند»)، آن ستون را خالی بگذارید و همین‌جا ضریب را وارد کنید.</p>
+
+      <div class="ex">
+        <b>مثال:</b> فاکتور شما برای یک قلم ۱۰۰ میلیون ریال است و گمرک ارزش را ۲۵٪ بالاتر می‌بندد.
+        با تعرفه ۴۰٪، حقوق ورودی از ۴۰ میلیون به ۵۰ میلیون می‌رسد — ۱۰ میلیون ریال هزینه‌ای که
+        در برآورد اولیه‌تان اصلاً نبود.
+      </div>
+    </div>
+  </details>
 </section>
 
 <!-- ============ products ============ -->
@@ -427,6 +486,9 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
           <th class="num">قیمت خرید<br>هر واحد (درهم)</th>
           <th class="num">تعداد</th>
           <th class="num">وزن کل<br>(کیلوگرم)</th>
+          <th class="num">ارزش گمرکی<br>هر واحد (درهم)</th>
+          <th class="num">تعرفه این کالا<br>(٪)</th>
+          <th class="num">ضایعات و<br>مرجوعی (٪)</th>
           <th class="num">هزینه جانبی<br>هر واحد (ریال)</th>
           <th class="num">قیمت روز بازار<br>تهران (ریال)</th>
           <th class="num">قیمت فروش من<br>(ریال، با VAT)</th>
@@ -441,7 +503,68 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
   <div class="controls noprint" style="margin-top:12px">
     <button type="button" id="addRow">+ افزودن کالا</button>
     <button type="button" id="resetBtn" class="ghost">بازگشت به مقادیر نمونه</button>
+    <span style="flex:1"></span>
+    <label for="targetMarginPct" style="font-size:12.5px;color:var(--ink-2)">حاشیه سود هدف</label>
+    <input type="number" id="targetMarginPct" step="1" min="0" max="99" style="width:74px">
+    <span style="font-size:12.5px;color:var(--ink-2)">٪</span>
+    <button type="button" id="applyTarget">اعمال به همه کالاها</button>
   </div>
+
+  <details class="learn">
+    <summary>تعرفه هر کالا — چرا یک درصد برای کل محموله کافی نیست؟</summary>
+    <div class="body">
+      <p>درصد حقوق ورودی به <strong>ردیف تعرفه (کد HS) خودِ کالا</strong> بستگی دارد، نه به محموله.
+      رژ لب، سرم پوست، لوازم برقی آرایشی و حتی بسته‌بندی می‌توانند تعرفه‌های متفاوتی داشته باشند.</p>
+
+      <p>اگر همه اقلام محموله یک ردیف تعرفه دارند، این ستون را <strong>خالی</strong> بگذارید تا از
+      «حقوق ورودی گمرک» بخش ۲ استفاده شود. اگر محموله ترکیبی است، برای هر کالا درصد خودش را بنویسید
+      — وگرنه بهای تمام‌شده بعضی اقلام کمتر و بعضی بیشتر از واقعیت برآورد می‌شود و مقایسه سود بین
+      کالاها بی‌معنا می‌شود.</p>
+
+      <p><strong>خالی</strong> یعنی «از درصد کلی محموله استفاده کن». عدد <strong>صفر</strong> یعنی
+      واقعاً تعرفه صفر — این دو یکی نیستند.</p>
+    </div>
+  </details>
+
+  <details class="learn">
+    <summary>ضایعات و مرجوعی — چرا حاشیه سود بدون آن خوش‌بینانه است؟</summary>
+    <div class="body">
+      <p>پول <strong>همه</strong> واحدها را داده‌اید، اما همه‌شان به قیمت کامل فروخته نمی‌شوند:
+      شکستگی در حمل، نشتی، تاریخ انقضای نزدیک، مرجوعی مشتری، و تخفیف آخر فصل.</p>
+
+      <p>این درصد <strong>تعداد قابل فروش را کم می‌کند ولی بهای تمام‌شده را دست نمی‌زند</strong> —
+      چون پولش پرداخت شده. نتیجه، حاشیه سودی است که به واقعیت نزدیک‌تر است.</p>
+
+      <p>برای لوازم آرایشی معمولاً ۳ تا ۸ درصد منطقی است؛ برای شیشه‌ای و مایعات بیشتر. اگر صفر
+      بگذارید، ابزار فرض می‌کند صد درصد کالا به قیمت کامل فروش می‌رود، که تقریباً هیچ‌وقت درست نیست.</p>
+
+      <div class="ex">
+        <b>مثال:</b> ۶۰۰ عدد با ۵٪ ضایعات یعنی <b>۵۷۰ عدد</b> فروش‌رفتنی — ولی بهای تمام‌شده
+        هر <b>۶۰۰</b> عدد. یعنی هزینه هر ۶۰۰ تا باید از درآمد ۵۷۰ تا دربیاید.
+      </div>
+    </div>
+  </details>
+
+  <details class="learn">
+    <summary>قیمت‌گذاری معکوس — از حاشیه هدف به قیمت</summary>
+    <div class="body">
+      <p>به‌جای اینکه قیمت بدهید و حاشیه بگیرید، <strong>حاشیه هدف را بدهید و قیمت بگیرید</strong> —
+      همان سؤالی که در عمل هر روز پیش می‌آید.</p>
+
+      <p>ستون <strong>«قیمت پیشنهادی»</strong> در جدول پایین نشان می‌دهد برای رسیدن به آن حاشیه،
+      قیمت قفسه هر کالا چقدر باید باشد؛ با احتساب ضایعات، هزینه فروش و ارزش افزوده.</p>
+
+      <p>دکمه «اعمال به همه کالاها» قیمت فروش را با همان اعداد پر می‌کند. بعد ستون
+      <strong>«فاصله تا بازار تهران»</strong> را نگاه کنید: اگر قیمت پیشنهادی خیلی بالاتر از بازار
+      درآمد، یعنی آن حاشیه در این بازار قابل دفاع نیست و باید یا هزینه را پایین بیاورید یا انتظار
+      حاشیه را.</p>
+
+      <div class="ex">
+        اگر <b>حاشیه هدف + هزینه فروش</b> به ۱۰۰٪ برسد، قیمت پیشنهادی بی‌نهایت می‌شود —
+        یعنی آن حاشیه با این ساختار هزینه اصلاً شدنی نیست.
+      </div>
+    </div>
+  </details>
 </section>
 
 <!-- ============ results ============ -->
@@ -460,6 +583,7 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
           <th class="num">حاشیه سود<br>٪</th>
           <th class="num">سود کل<br>ردیف</th>
           <th class="num">نقطه سربه‌سر<br>(قیمت فروش)</th>
+          <th class="num">قیمت پیشنهادی<br>(حاشیه هدف)</th>
           <th class="num">نرخ سربه‌سر<br>درهم</th>
           <th class="num">بازده<br>سالانه‌شده ٪</th>
           <th class="num">فاصله تا<br>بازار تهران</th>
@@ -536,23 +660,30 @@ function sampleState(){
     fx:{ usdIrr, aedIrr, usdAed:USD_AED_PEG, source:null, fetchedAt:null, placeholder:true },
     purchaseAedIrr: aedIrr,
     navasanKey:"",
+    targetMarginPct:35,
     ship:{
-      freightPerKgAed:2.5, insurancePct:0.5, dutyPct:40,
+      freightPerKgAed:2.5, insurancePct:0.5, dutyPct:40, customsUpliftPct:0,
       inlandPerKgIrr:120000, clearanceLumpIrr:900000000, otherLumpIrr:450000000,
       allocBasis:"weight", vatPct:10, vatRecoverable:"yes"
     },
     rows:[
-      row("کرم پودر (۳۰ میلی‌لیتر)",       32,  600, 42, 400000, 40600000, 37600000, 12, 75),
-      row("رژ لب مایع",                    14, 1200, 30, 250000, 17700000, 16400000, 12, 60),
-      row("پالت سایه چشم",                 48,  300, 39, 500000, 61500000, 56900000, 15, 110),
-      row("سرم ویتامین ث (۳۰ میلی‌لیتر)",  55,  400, 32, 450000, 68700000, 63600000, 10, 90),
-      row("ریمل حجم‌دهنده",                18,  900, 27, 300000, 22700000, 21000000, 12, 65)
+      //   نام، درهم، تعداد، وزن، جانبی، بازار، فروش، هزینه‌فروش٪، روز، تعرفه٪، ارزش گمرکی، ضایعات٪
+      row("کرم پودر (۳۰ میلی‌لیتر)",       32,  600, 42, 400000, 40600000, 37600000, 12,  75, "",  0, 3),
+      row("رژ لب مایع",                    14, 1200, 30, 250000, 17700000, 16400000, 12,  60, "",  0, 4),
+      row("پالت سایه چشم",                 48,  300, 39, 500000, 61500000, 56900000, 15, 110, "",  0, 6),
+      row("سرم ویتامین ث (۳۰ میلی‌لیتر)",  55,  400, 32, 450000, 68700000, 63600000, 10,  90, "",  0, 5),
+      row("ریمل حجم‌دهنده",                18,  900, 27, 300000, 22700000, 21000000, 12,  65, "",  0, 4)
     ]
   };
 }
 let uid = 1;
-function row(name,unitPriceAed,qty,weightKg,extraPerUnitIrr,marketPriceIrr,sellPriceIrr,sellCostPct,daysHeld){
-  return {id:uid++,name,unitPriceAed,qty,weightKg,extraPerUnitIrr,marketPriceIrr,sellPriceIrr,sellCostPct,daysHeld};
+function row(name,unitPriceAed,qty,weightKg,extraPerUnitIrr,marketPriceIrr,sellPriceIrr,
+             sellCostPct,daysHeld,dutyPctRow,customsValueAed,lossPct){
+  return {id:uid++,name,unitPriceAed,qty,weightKg,extraPerUnitIrr,marketPriceIrr,sellPriceIrr,
+          sellCostPct,daysHeld,
+          dutyPctRow:     dutyPctRow     === undefined ? ""  : dutyPctRow,
+          customsValueAed:customsValueAed === undefined ? 0  : customsValueAed,
+          lossPct:        lossPct        === undefined ? 0   : lossPct};
 }
 
 let state = load() || sampleState();
@@ -564,6 +695,14 @@ function load(){
     if(!raw) return null;
     const s = JSON.parse(raw);
     if(!s || !Array.isArray(s.rows) || !s.fx || !s.ship) return null;
+    // داده‌های ذخیره‌شده پیش از افزودن این فیلدها نباید باعث NaN شوند
+    if(s.ship.customsUpliftPct == null) s.ship.customsUpliftPct = 0;
+    if(s.targetMarginPct == null) s.targetMarginPct = 35;
+    s.rows.forEach(r => {
+      if(r.dutyPctRow == null)      r.dutyPctRow = "";
+      if(r.customsValueAed == null) r.customsValueAed = 0;
+      if(r.lossPct == null)         r.lossPct = 0;
+    });
     return s;
   }catch(e){ return null; }
 }
@@ -578,93 +717,106 @@ function compute(st){
   const {fx, ship} = st;
   const vat = ship.vatPct/100;
   const vatIsCost = ship.vatRecoverable === "no";
+  const uplift = 1 + num(ship.customsUpliftPct)/100;
+  const rate = num(fx.aedIrr);
 
   const totWeight = st.rows.reduce((a,r)=>a + num(r.weightKg), 0);
   const totFobAed = st.rows.reduce((a,r)=>a + num(r.unitPriceAed)*num(r.qty), 0);
   const lump = num(ship.clearanceLumpIrr) + num(ship.otherLumpIrr);
 
-  // بهای تمام‌شده یک ردیف با یک نرخ درهم دلخواه (برای تحلیل حساسیت هم استفاده می‌شود)
-  function landedAt(r, aedRate){
-    const qty = num(r.qty);
-    const fobAed   = num(r.unitPriceAed) * qty;
-    const freightAed = num(r.weightKg) * num(ship.freightPerKgAed);
-    // اجزای وابسته به ارز (خطی نسبت به نرخ درهم)
-    const cifAed   = fobAed*(1 + num(ship.insurancePct)/100) + freightAed;
-    const cifIrr   = cifAed * aedRate;
-    const dutyIrr  = cifIrr * num(ship.dutyPct)/100;
-    // اجزای ریالی (مستقل از نرخ ارز)
-    const inlandIrr = num(r.weightKg) * num(ship.inlandPerKgIrr);
-    return {qty, fobAed, freightAed, cifAed, cifIrr, dutyIrr, inlandIrr};
-  }
+  // درصد تعرفه این ردیف: اگر خالی باشد از مقدار کلی محموله استفاده می‌شود.
+  // صفر یک تعرفه معتبر است، پس «خالی» با «صفر» یکی گرفته نمی‌شود.
+  const rowDuty = r => (r.dutyPctRow === "" || r.dutyPctRow == null)
+    ? num(ship.dutyPct) : num(r.dutyPctRow);
 
   const rows = st.rows.map(r=>{
     const qty = Math.max(num(r.qty), 0);
-    const base = landedAt(r, num(fx.aedIrr));
+    const dutyPct = rowDuty(r)/100;
+
+    // ---- ارزش فاکتور ----
+    const fobAed     = num(r.unitPriceAed) * qty;
+    const freightAed = num(r.weightKg) * num(ship.freightPerKgAed);
+    const cifAed     = fobAed*(1 + num(ship.insurancePct)/100) + freightAed;
+
+    // ---- پایه‌ای که گمرک روی آن حق ورودی می‌بندد ----
+    // گمرک لزوماً فاکتور شما را قبول نمی‌کند و ارزش‌گذاری خودش را دارد.
+    // اگر ارزش گمرکی هر واحد وارد شده باشد همان مبناست، وگرنه ارزش فاکتور
+    // با ضریب اعلامی بالا برده می‌شود.
+    const cvUnit      = num(r.customsValueAed);
+    const dutyBaseAed = cvUnit > 0 ? cvUnit*qty : cifAed*uplift;
+
+    const goodsIrr     = num(r.unitPriceAed)*qty*rate;
+    const freightIrr   = freightAed*rate;
+    const insuranceIrr = goodsIrr*num(ship.insurancePct)/100;
+    const cifIrr       = goodsIrr + freightIrr + insuranceIrr;
+    const dutyBaseIrr  = dutyBaseAed*rate;
+    const dutyIrr      = dutyBaseIrr*dutyPct;
+    const importVatIrr = (dutyBaseIrr + dutyIrr)*vat;   // VAT هم روی ارزش گمرکی
+    const inlandIrr    = num(r.weightKg)*num(ship.inlandPerKgIrr);
 
     // سهم از هزینه‌های مقطوع محموله
-    let share = 0;
-    if(ship.allocBasis === "value"){
-      share = totFobAed > 0 ? (num(r.unitPriceAed)*qty)/totFobAed : 0;
-    }else{
-      share = totWeight > 0 ? num(r.weightKg)/totWeight : 0;
-    }
+    const share = ship.allocBasis === "value"
+      ? (totFobAed > 0 ? (num(r.unitPriceAed)*qty)/totFobAed : 0)
+      : (totWeight  > 0 ? num(r.weightKg)/totWeight : 0);
     const lumpIrr  = lump * share;
     const extraIrr = num(r.extraPerUnitIrr) * qty;
 
-    const goodsIrr     = num(r.unitPriceAed)*qty*num(fx.aedIrr);
-    const freightIrr   = base.freightAed*num(fx.aedIrr);
-    const insuranceIrr = goodsIrr*num(ship.insurancePct)/100;
-    const dutyIrr      = base.dutyIrr;
-    const inlandIrr    = base.inlandIrr;
-
-    // VAT گمرک روی CIF + حقوق ورودی
-    const importVatIrr = (base.cifIrr + dutyIrr) * vat;
-
-    const landedIrr = goodsIrr + freightIrr + insuranceIrr + dutyIrr + inlandIrr + lumpIrr + extraIrr
-                    + (vatIsCost ? importVatIrr : 0);
+    const landedIrr  = cifIrr + dutyIrr + inlandIrr + lumpIrr + extraIrr
+                     + (vatIsCost ? importVatIrr : 0);
     const landedUnit = qty>0 ? landedIrr/qty : 0;
-    const cashOutIrr = goodsIrr + freightIrr + insuranceIrr + dutyIrr + inlandIrr + lumpIrr + extraIrr + importVatIrr;
+    const cashOutIrr = cifIrr + dutyIrr + inlandIrr + lumpIrr + extraIrr + importVatIrr;
 
-    // فروش: قیمت فروش شامل ارزش افزوده وارد می‌شود
-    const shelf      = num(r.sellPriceIrr);
-    const netRevUnit = shelf/(1+vat);
-    const sellCostUnit = netRevUnit*num(r.sellCostPct)/100;
-    const profitUnit = netRevUnit - landedUnit - sellCostUnit;
-    const profitTot  = profitUnit*qty;
-    const marginPct  = netRevUnit>0 ? profitUnit/netRevUnit*100 : 0;
-    const markupPct  = landedUnit>0 ? profitUnit/landedUnit*100 : 0;
+    // ---- ضایعات: پولش را داده‌اید ولی به قیمت کامل فروخته نمی‌شود ----
+    const lossPct = Math.min(Math.max(num(r.lossPct), 0), 100);
+    const effQty  = qty * (1 - lossPct/100);      // تعداد قابل فروش
 
-    // نقطه سربه‌سر قیمت فروش (قفسه، با VAT)
-    const sc = num(r.sellCostPct)/100;
-    const breakEvenShelf = sc < 1 ? landedUnit/(1-sc)*(1+vat) : Infinity;
+    const shelf        = num(r.sellPriceIrr);
+    const netRevUnit   = shelf/(1+vat);
+    const sc           = num(r.sellCostPct)/100;
+    const sellCostUnit = netRevUnit*sc;
 
-    // نرخ درهم سربه‌سر: landedUnit(r) خطی است ⇒ A·r + B
-    const perUnitAedLoad = qty>0
-      ? (base.cifAed*(1+num(ship.dutyPct)/100))/qty          // اجزای درهمی، با اثر حقوق ورودی
-      : 0;
-    const A = perUnitAedLoad * (vatIsCost ? (1+vat) : 1);
-    const Bfixed = qty>0 ? (inlandIrr + lumpIrr + extraIrr)/qty : 0;
-    const B = Bfixed;                                          // اجزای ریالی ثابت
-    const available = netRevUnit - sellCostUnit;
-    const breakEvenAed = A>0 ? (available - B)/A : Infinity;
+    const revenueNet     = netRevUnit * effQty;                    // درآمد خالص ردیف
+    const availableTotal = (netRevUnit - sellCostUnit) * effQty;   // پیش از بهای تمام‌شده
+    const profitTot      = availableTotal - landedIrr;
+    const profitUnit     = qty>0 ? profitTot/qty : 0;              // به ازای هر واحد خریداری‌شده
+    const marginPct      = revenueNet>0 ? profitTot/revenueNet*100 : 0;
+    const markupPct      = landedIrr>0 ? profitTot/landedIrr*100 : 0;
 
-    // بازار تهران
+    // نقطه سربه‌سر قیمت قفسه: درآمد خالصِ اقلام سالم باید کل بهای تمام‌شده را بپوشاند
+    const breakEvenShelf = (sc < 1 && effQty > 0)
+      ? landedIrr/((1-sc)*effQty)*(1+vat) : Infinity;
+
+    // قیمت لازم برای رسیدن به حاشیه سود هدف
+    const m = num(st.targetMarginPct)/100;
+    const denom = 1 - sc - m;
+    const targetShelf = (denom > 0 && effQty > 0)
+      ? landedIrr/(effQty*denom)*(1+vat) : Infinity;
+
+    // بهای تمام‌شده نسبت به نرخ درهم خطی است ⇒ A·نرخ + B
+    const aedLoad = cifAed + dutyBaseAed*dutyPct
+                  + (vatIsCost ? dutyBaseAed*(1+dutyPct)*vat : 0);
+    const A       = qty>0 ? aedLoad/qty : 0;            // ضریب ارزی هر واحد
+    const Btot    = inlandIrr + lumpIrr + extraIrr;     // اجزای ریالی ثابت
+    const B       = qty>0 ? Btot/qty : 0;
+    const availPerUnit = qty>0 ? availableTotal/qty : 0;
+    const breakEvenAed = A>0 ? (availPerUnit - B)/A : Infinity;
+
     const market = num(r.marketPriceIrr);
     const vsMarketPct = market>0 ? (shelf-market)/market*100 : null;
 
-    // زمان و بازده
     const days = Math.max(num(r.daysHeld), 1);
     const roi = landedIrr>0 ? profitTot/landedIrr*100 : 0;
     const roiAnnual = roi*365/days;
 
     return {
-      ...r, qty, share,
-      goodsIrr, freightIrr, insuranceIrr, dutyIrr, inlandIrr, lumpIrr, extraIrr,
+      ...r, qty, share, dutyPct: dutyPct*100, lossPct, effQty,
+      dutyBaseAed, dutyBaseIrr, customsUplifted: cvUnit<=0 && uplift!==1,
+      goodsIrr, freightIrr, insuranceIrr, cifIrr, dutyIrr, inlandIrr, lumpIrr, extraIrr,
       importVatIrr, landedIrr, landedUnit, cashOutIrr,
-      netRevUnit, sellCostUnit, profitUnit, profitTot, marginPct, markupPct,
-      breakEvenShelf, breakEvenAed, A, B, available,
+      netRevUnit, sellCostUnit, revenueNet, availableTotal,
+      profitUnit, profitTot, marginPct, markupPct,
+      breakEvenShelf, targetShelf, breakEvenAed, A, B, available: availPerUnit,
       vsMarketPct, days, roi, roiAnnual,
-      // اجزای نمودار انباشته (هر واحد)
       seg:{
         goods:   qty>0 ? goodsIrr/qty : 0,
         freight: qty>0 ? (freightIrr+insuranceIrr)/qty : 0,
@@ -677,38 +829,33 @@ function compute(st){
 
   const t = {
     qty:        sum(rows,"qty"),
-    weight:     st.rows.reduce((a,r)=>a+num(r.weightKg),0),
+    effQty:     sum(rows,"effQty"),
+    weight:     totWeight,
     fobAed:     totFobAed,
     landedIrr:  sum(rows,"landedIrr"),
     cashOutIrr: sum(rows,"cashOutIrr"),
     importVat:  sum(rows,"importVatIrr"),
+    dutyIrr:    sum(rows,"dutyIrr"),
     profitTot:  sum(rows,"profitTot"),
-    revenueNet: rows.reduce((a,r)=>a+r.netRevUnit*r.qty,0)
+    revenueNet: sum(rows,"revenueNet")
   };
+  t.lostUnits = t.qty - t.effQty;
   t.marginPct = t.revenueNet>0 ? t.profitTot/t.revenueNet*100 : 0;
   t.roi       = t.landedIrr>0 ? t.profitTot/t.landedIrr*100 : 0;
   t.avgDays   = t.landedIrr>0
-    ? rows.reduce((a,r)=>a+r.days*r.landedIrr,0)/t.landedIrr    // میانگین وزنی بر مبنای سرمایه درگیر
+    ? rows.reduce((a,r)=>a+r.days*r.landedIrr,0)/t.landedIrr
     : 0;
   t.roiAnnual = t.avgDays>0 ? t.roi*365/t.avgDays : 0;
 
-  // نرخ درهم سربه‌سر کل سبد: Σ(available_i·q_i) = Σ(A_i·q_i)·r + Σ(B_i·q_i)
   const sumA = rows.reduce((a,r)=>a+r.A*r.qty,0);
   const sumB = rows.reduce((a,r)=>a+r.B*r.qty,0);
-  const sumAvail = rows.reduce((a,r)=>a+r.available*r.qty,0);
+  const sumAvail = sum(rows,"availableTotal");
   t.breakEvenAed = sumA>0 ? (sumAvail-sumB)/sumA : Infinity;
   t.sumA = sumA; t.sumB = sumB; t.sumAvail = sumAvail;
 
-  // ریسک ارزی: اگر جنس با نرخ روز خرید خریداری شده اما جایگزینی‌اش با نرخ امروز است
-  const pRate = num(st.purchaseAedIrr) || num(fx.aedIrr);
-  const cRate = num(fx.aedIrr);
+  const pRate = num(st.purchaseAedIrr) || rate;
   t.purchaseRate = pRate;
-  // بهای تمام‌شده با نرخ *امروز* حساب می‌شود، پس profitTot از همان ابتدا
-  // «سود بر مبنای جایگزینی» است — یعنی سود واقعیِ قابل برداشت.
-  // Σ(A_i·q_i)·Δنرخ = اختلاف بهای تمام‌شده بین نرخ روز خرید و نرخ امروز.
-  t.replacementDelta = (cRate - pRate) * sumA;
-  // سود دفتری = اگر محموله را با همان نرخی که واقعاً خریده‌اید ارزش‌گذاری کنیم.
-  // اگر ریال ضعیف شده باشد این عدد بزرگ‌تر از سود واقعی است.
+  t.replacementDelta = (rate - pRate) * sumA;
   t.bookProfit = t.profitTot + t.replacementDelta;
 
   return {rows, t};
@@ -875,8 +1022,9 @@ function refreshFxChip(){
 /* =======================================================================
    ورودی‌ها
    ======================================================================= */
-const SHIP_FIELDS = ["freightPerKgAed","insurancePct","dutyPct","inlandPerKgIrr",
-                     "clearanceLumpIrr","otherLumpIrr","allocBasis","vatPct","vatRecoverable"];
+const SHIP_FIELDS = ["freightPerKgAed","insurancePct","dutyPct","customsUpliftPct",
+                     "inlandPerKgIrr","clearanceLumpIrr","otherLumpIrr","allocBasis",
+                     "vatPct","vatRecoverable"];
 
 function syncInputs(){
   document.getElementById("usdIrr").value = state.fx.usdIrr;
@@ -884,6 +1032,7 @@ function syncInputs(){
   document.getElementById("usdAed").value = state.fx.usdAed;
   document.getElementById("purchaseAedIrr").value = state.purchaseAedIrr;
   document.getElementById("navasanKey").value = state.navasanKey || "";
+  document.getElementById("targetMarginPct").value = state.targetMarginPct;
   SHIP_FIELDS.forEach(k => { document.getElementById(k).value = state.ship[k]; });
 }
 
@@ -925,9 +1074,34 @@ function bindInputs(){
     });
   });
 
+  document.getElementById("targetMarginPct").addEventListener("input", e => {
+    state.targetMarginPct = num(e.target.value);
+    save(); render();
+  });
+
+  // قیمت فروش هر کالا را روی قیمتی می‌گذارد که حاشیه هدف را می‌دهد
+  document.getElementById("applyTarget").addEventListener("click", () => {
+    const m = compute(state);
+    const bad = m.rows.filter(r => !Number.isFinite(r.targetShelf)).length;
+    if(bad === m.rows.length){
+      toast("با این حاشیه هدف و هزینه فروش، هیچ قیمتی ممکن نیست. حاشیه هدف را کم کنید.");
+      return;
+    }
+    let n = 0;
+    m.rows.forEach((r,i) => {
+      if(Number.isFinite(r.targetShelf) && r.targetShelf > 0){
+        state.rows[i].sellPriceIrr = Math.round(r.targetShelf/1000)*1000;
+        n++;
+      }
+    });
+    save(); renderInputs(); render();
+    toast(n + " قیمت فروش روی حاشیه هدف " + pct(num(state.targetMarginPct)) + " تنظیم شد."
+        + (bad ? "  (" + bad + " کالا شدنی نبود.)" : ""));
+  });
+
   document.getElementById("fetchBtn").addEventListener("click", fetchRates);
   document.getElementById("addRow").addEventListener("click", () => {
-    state.rows.push(row("کالای جدید", 0, 0, 0, 0, 0, 0, 12, 60));
+    state.rows.push(row("کالای جدید", 0, 0, 0, 0, 0, 0, 12, 60, "", 0, 0));
     save(); renderInputs(); render();
   });
   document.getElementById("resetBtn").addEventListener("click", () => {
@@ -961,6 +1135,9 @@ const ROW_FIELDS = [
   {k:"unitPriceAed",     type:"number", step:"0.01"},
   {k:"qty",              type:"number", step:"1"},
   {k:"weightKg",         type:"number", step:"0.1"},
+  {k:"customsValueAed",  type:"number", step:"0.01", blankZero:true},
+  {k:"dutyPctRow",       type:"number", step:"1",    blank:true},
+  {k:"lossPct",          type:"number", step:"0.5"},
   {k:"extraPerUnitIrr",  type:"number", step:"1000"},
   {k:"marketPriceIrr",   type:"number", step:"10000"},
   {k:"sellPriceIrr",     type:"number", step:"10000"},
@@ -980,10 +1157,15 @@ function renderInputs(){
       inp.type = f.type;
       if(f.step) inp.step = f.step;
       if(f.cls) inp.className = f.cls;
-      inp.value = r[f.k];
+      inp.value = (f.blankZero && !num(r[f.k])) ? "" : r[f.k];
       inp.setAttribute("aria-label", f.k);
+      if(f.blank) inp.placeholder = "کلی";
+      if(f.blankZero) inp.placeholder = "فاکتور";
       inp.addEventListener("input", e => {
-        r[f.k] = f.type==="number" ? num(e.target.value) : e.target.value;
+        const v = e.target.value;
+        if(f.type !== "number")      r[f.k] = v;
+        else if(f.blank && v === "") r[f.k] = "";      // یعنی «از تعرفه کلی استفاده کن»
+        else                         r[f.k] = num(v);
         save(); render();
       });
       td.appendChild(inp);
@@ -1039,7 +1221,11 @@ function renderTiles(){
     {k:"سرمایه لازم (پرداختی کل)", v:moneyCompact(t.cashOutIrr), u:u.label+" · شامل ارزش افزوده گمرک"},
     {k:"ارزش خرید از دبی",         v:FA.format(Math.round(t.fobAed)), u:"درهم · "+FA.format(Math.round(t.weight))+" کیلوگرم"},
     {k:"بهای تمام‌شده کالا",        v:moneyCompact(t.landedIrr), u:u.label+" · بدون ارزش افزوده"},
-    {k:"سود ناخالص پیش‌بینی‌شده",   v:moneyCompact(t.profitTot), u:u.label, cls:t.profitTot>=0?"pos":"neg"},
+    {k:"سود ناخالص پیش‌بینی‌شده",   v:moneyCompact(t.profitTot),
+     u: t.lostUnits>0.5
+        ? u.label+" · پس از "+FA.format(Math.round(t.lostUnits))+" عدد ضایعات"
+        : u.label,
+     cls:t.profitTot>=0?"pos":"neg"},
     {k:"حاشیه سود کل",             v:pct(t.marginPct), u:"از فروش خالص", cls:t.marginPct>=0?"pos":"neg"},
     {k:"بازده سالانه‌شده سرمایه",   v:pct(t.roiAnnual), u:"میانگین "+FA.format(Math.round(t.avgDays))+" روز درگیری", cls:t.roiAnnual>=0?"pos":"neg"},
     {k:"نرخ درهم سربه‌سر",          v:rate(t.breakEvenAed), u:"ریال · نرخ فعلی "+rate(num(state.fx.aedIrr))}
@@ -1069,6 +1255,8 @@ function renderOutTable(){
       {t:pct(r.marginPct),    color:r.marginPct>=0?"good":"bad"},
       {t:moneyCompact(r.profitTot), color:r.profitTot>=0?"good":"bad"},
       {t:money(r.breakEvenShelf)},
+      {t:Number.isFinite(r.targetShelf) ? money(r.targetShelf) : "ناممکن",
+       color: Number.isFinite(r.targetShelf) ? null : "bad"},
       {t:rate(r.breakEvenAed), color: r.breakEvenAed>num(state.fx.aedIrr)?"good":"bad"},
       {t:pct(r.roiAnnual),    color:r.roiAnnual>=0?"good":"bad"},
       {t:r.vsMarketPct==null ? "—" : (r.vsMarketPct>0?"+":"")+pct(r.vsMarketPct)}
@@ -1092,6 +1280,7 @@ function renderOutTable(){
     "—",
     pct(t.marginPct),
     moneyCompact(t.profitTot),
+    "—",
     "—",
     rate(t.breakEvenAed),
     pct(t.roiAnnual),
@@ -1541,20 +1730,24 @@ function renderMiniTable(id, headers, rows){
 function exportCsv(){
   const u = unitInfo();
   const head = ["نام محصول","تعداد","قیمت خرید هر واحد (درهم)","وزن کل (کیلوگرم)",
+    "ارزش گمرکی هر واحد (درهم)","تعرفه اعمال‌شده ٪","ضایعات ٪","تعداد قابل فروش",
     "کالا","کرایه+بیمه","حقوق ورودی","حمل داخلی+ترخیص","جانبی",
     `بهای تمام‌شده کل (${u.label})`,`بهای تمام‌شده هر واحد (${u.label})`,
     `فروش خالص هر واحد (${u.label})`,`سود هر واحد (${u.label})`,"حاشیه سود ٪",
-    `سود کل (${u.label})`,`نقطه سربه‌سر فروش (${u.label})`,"نرخ سربه‌سر درهم (ریال)",
+    `سود کل (${u.label})`,`نقطه سربه‌سر فروش (${u.label})`,
+    `قیمت پیشنهادی حاشیه هدف (${u.label})`,"نرخ سربه‌سر درهم (ریال)",
     "روز درگیری سرمایه","بازده سالانه‌شده ٪"];
   const n = v => Number.isFinite(v) ? Math.round(v/u.div) : "";
   const lines = [head.join(",")];
   model.rows.forEach(r=>{
     lines.push([
       `"${(r.name||"").replace(/"/g,'""')}"`, r.qty, r.unitPriceAed, r.weightKg,
+      num(r.customsValueAed) || "", r.dutyPct.toFixed(1), r.lossPct, Math.round(r.effQty),
       n(r.goodsIrr), n(r.freightIrr+r.insuranceIrr), n(r.dutyIrr),
       n(r.inlandIrr+r.lumpIrr), n(r.extraIrr),
       n(r.landedIrr), n(r.landedUnit), n(r.netRevUnit), n(r.profitUnit),
       r.marginPct.toFixed(1), n(r.profitTot), n(r.breakEvenShelf),
+      Number.isFinite(r.targetShelf)?n(r.targetShelf):"",
       Number.isFinite(r.breakEvenAed)?Math.round(r.breakEvenAed):"",
       r.days, r.roiAnnual.toFixed(1)
     ].join(","));
@@ -1563,6 +1756,8 @@ function exportCsv(){
   lines.push(`"نرخ درهم (ریال)",${state.fx.aedIrr}`);
   lines.push(`"نرخ دلار (ریال)",${state.fx.usdIrr}`);
   lines.push(`"منبع نرخ","${state.fx.source||"ورود دستی"}"`);
+  lines.push(`"ضریب ارزش گمرکی ٪",${num(state.ship.customsUpliftPct)}`);
+  lines.push(`"حاشیه سود هدف ٪",${num(state.targetMarginPct)}`);
   lines.push(`"تاریخ خروجی","${new Date().toLocaleString("fa-IR")}"`);
 
   saveFile("بهای-تمام-شده-واردات.csv", "﻿"+lines.join("\r\n"));
