@@ -147,6 +147,33 @@ th .qbtn{background:rgba(255,255,255,.30)}
 .hk{font-size:11px;font-weight:700;color:var(--s1);margin-bottom:3px}
 .hs p{margin:0;font-size:13px;line-height:1.85;color:var(--ink-2)}
 
+details.apibox{
+  margin-top:13px;border:1px solid var(--border);border-radius:8px;
+  background:var(--surface-2);overflow:hidden;
+}
+details.apibox > summary{
+  cursor:pointer;list-style:none;padding:9px 13px;
+  font-size:12.5px;font-weight:600;color:var(--ink-2);
+  display:flex;align-items:center;gap:7px;
+}
+details.apibox > summary::-webkit-details-marker{display:none}
+details.apibox > summary::before{
+  content:"⚙";color:var(--s1);font-size:13px;
+}
+details.apibox[open] > summary{border-bottom:1px solid var(--border)}
+.apibody{padding:12px 14px;font-size:12.5px;line-height:1.85;color:var(--ink-2)}
+.apibody p{margin:0 0 10px}
+.apibody b{color:var(--ink)}
+.apibody a{color:var(--s1);font-weight:600}
+.apibody .urlbox{
+  display:block;margin-top:4px;padding:7px 10px;border-radius:6px;
+  background:var(--surface);border:1px solid var(--border);
+  font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;
+  direction:ltr;text-align:left;word-break:break-all;color:var(--ink);
+}
+.srclist{margin:0;padding-inline-start:18px}
+.srclist li{margin-bottom:5px}
+
 .adv{display:none}
 body.advanced .adv{display:initial}
 body.advanced tr.adv,body.advanced tbody.adv{display:table-row}
@@ -256,6 +283,43 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
   <p class="hint" style="margin:7px 0 0;color:var(--muted)">
     هر خانه = قیمت یک واحد آن ارز به تومان. اگر عددی درست نبود، دستی اصلاحش کنید.
   </p>
+
+  <details class="apibox noprint">
+    <summary>اگر دریافت خودکار جواب نداد — کلید API</summary>
+    <div class="apibody">
+      <p>
+        <b>برای ارزهای خارجی (درهم، یوان، یورو…) هیچ کلیدی لازم نیست.</b>
+        سرویس‌های جهانی رایگان‌اند و ابزار خودش سراغشان می‌رود.
+      </p>
+      <p>
+        فقط <b>قیمت آزاد دلار به تومان</b> است که سرویس رسمی و رایگانِ قابل‌اتکا ندارد.
+        ابزار اول دو منبع عمومی ایرانی را امتحان می‌کند؛ اگر جواب ندادند
+        (فیلترینگ، تغییر ساختار، یا محدودیت مرورگر)، یک کلید API این مشکل را حل می‌کند.
+      </p>
+
+      <div class="f" style="margin-bottom:11px">
+        <label for="navasanKey">کلید API نوسان (اختیاری)</label>
+        <input type="text" id="navasanKey" placeholder="کلید را اینجا بچسبانید" autocomplete="off" spellcheck="false">
+        <span class="hint">در همین مرورگر ذخیره می‌شود و جایی فرستاده نمی‌شود.</span>
+      </div>
+
+      <p>
+        <b>کلید را از اینجا بگیرید:</b>
+        <a href="https://navasan.tech" target="_blank" rel="noopener noreferrer">navasan.tech ↗</a>
+        <span class="urlbox">https://navasan.tech</span>
+      </p>
+
+      <p style="margin-bottom:6px"><b>منابعی که ابزار امتحان می‌کند، به ترتیب:</b></p>
+      <ol class="srclist">
+        <li><b>قیمت دلار آزاد:</b> نوسان (با کلید) ← TGJU (بدون کلید) ← آلان‌چند (بدون کلید)</li>
+        <li><b>نسبت بقیه ارزها به دلار:</b> Frankfurter ← ER-API ← currency-api — هر سه بدون کلید</li>
+      </ol>
+      <p style="margin-top:10px">
+        اگر هیچ‌کدام جواب نداد، قیمت دلار را دستی از صرافی بپرسید و در خانه بالا بنویسید.
+        بقیه ارزها باز هم خودشان حساب می‌شوند و چیزی از کار نمی‌افتد.
+      </p>
+    </div>
+  </details>
 </section>
 
 <!-- ============ ۲ · هزینه آوردن ============ -->
@@ -436,6 +500,7 @@ function sampleState(){
   return {
     unit:"toman", mode:"simple",
     fx:{ usdToman:115000, rates, source:null, fetchedAt:null, placeholder:true },
+    navasanKey:"",
     purchaseUsdToman:115000,
     ship:{
       freight:{amount:1800, cur:"USD"},
@@ -467,6 +532,7 @@ function load(){
     const s = JSON.parse(localStorage.getItem(STORE) || "null");
     if(!s || !Array.isArray(s.rows) || !s.fx || !s.ship) return null;
     if(s.mode !== "advanced") s.mode = "simple";
+    if(s.navasanKey == null) s.navasanKey = "";
     s.rows.forEach(r=>{
       if(r.sellCostPct == null) r.sellCostPct = 0;
       if(r.lossPct == null) r.lossPct = 0;
@@ -697,12 +763,19 @@ async function fetchRates(){
   }
 
   btn.disabled = false; btn.textContent = "دریافت خودکار نرخ‌ها";
-  if(!gotUsd && !gotWorld)
-    toast("دریافت خودکار جواب نداد. نرخ دلار را دستی وارد کنید — بقیه ارزها خودشان حساب می‌شوند.");
-  else if(!gotUsd)
-    toast("نرخ ارزهای خارجی به‌روز شد، ولی نرخ آزاد دلار نیامد. آن یکی را دستی وارد کنید.");
-  else if(!gotWorld)
+  const openApiBox = () => {
+    const d = document.querySelector("details.apibox");
+    if(d) d.open = true;
+  };
+  if(!gotUsd && !gotWorld){
+    toast("دریافت خودکار جواب نداد. نرخ دلار را دستی وارد کنید، یا از بخش «کلید API» زیر جدول ارز کلید بگیرید.");
+    openApiBox();
+  } else if(!gotUsd){
+    toast("نرخ ارزهای خارجی به‌روز شد، ولی نرخ آزاد دلار نیامد. دستی واردش کنید یا کلید API بگیرید.");
+    openApiBox();
+  } else if(!gotWorld){
     toast("نرخ دلار به‌روز شد، ولی نرخ سایر ارزها نیامد.");
+  }
 }
 
 function refreshChip(){
@@ -769,6 +842,7 @@ function syncInputs(){
   document.getElementById("dutyPct").value = state.ship.dutyPct;
   document.getElementById("vatPct").value = state.ship.vatPct;
   document.getElementById("targetMarginPct").value = state.targetMarginPct;
+  document.getElementById("navasanKey").value = state.navasanKey || "";
   renderFxTable();
 }
 
@@ -898,6 +972,9 @@ function bindInputs(){
     if(!confirm("همه داده‌ها به مقادیر نمونه برمی‌گردد. مطمئنید؟")) return;
     state = sampleState(); uid = Math.max(0,...state.rows.map(r=>r.id))+1;
     save(); syncInputs(); renderInputs(); render();
+  });
+  document.getElementById("navasanKey").addEventListener("input", e=>{
+    state.navasanKey = e.target.value.trim(); save();
   });
   document.getElementById("fetchBtn").addEventListener("click", fetchRates);
 
@@ -1340,6 +1417,12 @@ usdIrr:{g:"۱ · ارز", t:"قیمت دلار",
   why:"تنها نرخی که باید دستی وارد کنید. قیمت درهم، یوان، یورو و بقیه ارزها همه از روی همین یکی حساب می‌شوند، چون نسبتشان با دلار تقریباً ثابت است.",
   how:"از صرافی بپرسید، یا دکمه «دریافت خودکار نرخ‌ها» را بزنید.",
   note:"نرخ رسمی یا نیما را وارد نکنید. اگر عدد را اشتباه بزنید، همه چیز اشتباه می‌شود — این مهم‌ترین خانه صفحه است."},
+
+navasanKey:{g:"۱ · ارز", t:"کلید API نوسان",
+  what:"یک رشته حروف و عدد که از سایت navasan.tech می‌گیرید تا ابزار بتواند قیمت آزاد دلار را خودکار بردارد.",
+  why:"برای ارزهای خارجی هیچ کلیدی لازم نیست — سرویس‌های جهانی رایگان‌اند. فقط قیمت آزاد دلار به تومان است که منبع رسمی و پایداری ندارد؛ منابع عمومی ایرانی ممکن است جواب ندهند.",
+  how:"به navasan.tech بروید، ثبت‌نام کنید و کلید را بردارید و اینجا بچسبانید. کلید در همین مرورگر می‌ماند و جایی فرستاده نمی‌شود.",
+  note:"کاملاً اختیاری است. بدون کلید هم ابزار کار می‌کند — فقط قیمت دلار را دستی وارد کنید و بقیه ارزها خودشان حساب می‌شوند."},
 
 freightAmt:{g:"۲ · هزینه آوردن", t:"کرایه حمل تا ایران",
   what:"کل پولی که بابت رساندن محموله به ایران می‌دهید — دریایی، زمینی یا هوایی.",
