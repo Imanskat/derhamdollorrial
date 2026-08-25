@@ -3,382 +3,198 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>محاسبه‌گر بهای تمام‌شده واردات آرایشی — دبی ← بندرعباس ← تهران</title>
+<title>حساب‌کتاب واردات — جنس تا ایران چند درمی‌آید؟</title>
 <style>
-/* ---------- tokens: light is the base, dark redefined under both scopes ---------- */
 :root{
   color-scheme: light;
-  --plane:#f9f9f7;
-  --surface:#fcfcfb;
-  --surface-2:#f2f1ec;
-  --ink:#0b0b0b;
-  --ink-2:#52514e;
-  --muted:#898781;
-  --grid:#e1e0d9;
-  --axis:#c3c2b7;
-  --border:rgba(11,11,11,0.10);
+  --plane:#f9f9f7; --surface:#fcfcfb; --surface-2:#f2f1ec;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,0.10);
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
-  --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
-  --good-text:#006300;
-  --pos:#2a78d6; --neg:#d03b3b; --mid:#f0efec;
+  --good:#0ca30c; --warning:#fab219; --critical:#d03b3b; --good-text:#006300;
 }
 @media (prefers-color-scheme: dark){
   :root:where(:not([data-theme="light"])){
     color-scheme: dark;
-    --plane:#0d0d0d;
-    --surface:#1a1a19;
-    --surface-2:#232322;
-    --ink:#ffffff;
-    --ink-2:#c3c2b7;
-    --muted:#898781;
-    --grid:#2c2c2a;
-    --axis:#383835;
-    --border:rgba(255,255,255,0.10);
+    --plane:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
     --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
     --good-text:#0ca30c;
-    --pos:#3987e5; --neg:#d03b3b; --mid:#383835;
   }
 }
 :root[data-theme="dark"]{
   color-scheme: dark;
-  --plane:#0d0d0d;
-  --surface:#1a1a19;
-  --surface-2:#232322;
-  --ink:#ffffff;
-  --ink-2:#c3c2b7;
-  --muted:#898781;
-  --grid:#2c2c2a;
-  --axis:#383835;
-  --border:rgba(255,255,255,0.10);
+  --plane:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
+  --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
   --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
   --good-text:#0ca30c;
-  --pos:#3987e5; --neg:#d03b3b; --mid:#383835;
 }
-
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  background:var(--plane);
-  color:var(--ink);
+  direction:rtl;background:var(--plane);color:var(--ink);
   font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
-  font-size:14px;
-  line-height:1.6;
-  padding:16px;
+  font-size:14px;line-height:1.65;padding:16px;
 }
-.wrap{max-width:1240px;margin:0 auto}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:21px;margin:0 0 3px;font-weight:650;letter-spacing:-0.01em}
+.sub{color:var(--ink-2);font-size:13px;margin:0}
 
-h1{font-size:20px;margin:0 0 2px;font-weight:650;letter-spacing:-0.01em}
-h2{font-size:15px;margin:0 0 12px;font-weight:600}
-.sub{color:var(--ink-2);font-size:12.5px;margin:0}
+/* ---- شماره و عنوان بخش ---- */
+.step{display:flex;align-items:baseline;gap:9px;margin-bottom:5px}
+.step .n{
+  width:23px;height:23px;border-radius:50%;flex:none;
+  background:var(--s1);color:#fff;font-size:12.5px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+  transform:translateY(3px);
+}
+.step h2{font-size:16px;margin:0;font-weight:650}
+.why{
+  color:var(--ink-2);font-size:12.5px;line-height:1.75;
+  margin:0 0 14px;padding-inline-start:32px;
+}
+.why b{color:var(--ink);font-weight:600}
 
 header.top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
 .controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:17px 18px;margin-bottom:14px}
 
-.card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:16px;
-  margin-bottom:14px;
-}
-
-button,select,input{
-  font-family:inherit;font-size:13px;color:var(--ink);
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:7px;
-  padding:6px 9px;
-}
-input{background:var(--surface-2)}
+button,select,input{font-family:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:6px 9px}
+input,select{background:var(--surface-2)}
 input:focus,select:focus{outline:2px solid var(--s1);outline-offset:-1px}
 :focus-visible{outline:2px solid var(--s1);outline-offset:2px;border-radius:4px}
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
-}
 button{cursor:pointer;background:var(--surface-2)}
 button:hover{border-color:var(--axis)}
 button.primary{background:var(--s1);color:#fff;border-color:transparent;font-weight:600}
 button.primary:hover{filter:brightness(1.08)}
 button.ghost{background:transparent}
 button.danger{color:var(--critical);padding:4px 7px}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
 
 .seg{display:inline-flex;border:1px solid var(--border);border-radius:7px;overflow:hidden}
-.seg button{border:0;border-radius:0;background:transparent;padding:6px 10px}
+.seg button{border:0;border-radius:0;background:transparent;padding:6px 11px}
 .seg button[aria-pressed="true"]{background:var(--s1);color:#fff;font-weight:600}
 
-/* ---------- field grid ---------- */
-.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:13px}
 .f{display:flex;flex-direction:column;gap:3px;min-width:0}
-.f label{font-size:11.5px;color:var(--ink-2);font-weight:500}
-.f .hint{font-size:10.5px;color:var(--muted);line-height:1.35}
+.f label{font-size:12px;color:var(--ink-2);font-weight:500;display:flex;align-items:center}
+.f .hint{font-size:11px;color:var(--muted);line-height:1.45}
 .f input,.f select{width:100%}
 input[type=number]{font-variant-numeric:tabular-nums}
+.pair{display:flex;gap:5px}
+.pair input{flex:1;min-width:0}
+.pair select{width:96px;flex:none}
 
-/* ---------- fx status ---------- */
-.fxbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
-.chip{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:12px;padding:4px 10px;border-radius:999px;
-  border:1px solid var(--border);background:var(--surface-2);color:var(--ink-2);
-}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink-2)}
 .chip .dot{width:8px;height:8px;border-radius:50%;flex:none}
 .dot.ok{background:var(--good)} .dot.warn{background:var(--warning)} .dot.bad{background:var(--critical)}
-.note{
-  border-inline-start:3px solid var(--warning);
-  background:var(--surface-2);
-  padding:9px 12px;border-radius:0 7px 7px 0;
-  font-size:12.5px;color:var(--ink-2);margin-top:12px;
-}
+.note{border-inline-start:3px solid var(--warning);background:var(--surface-2);padding:10px 13px;border-radius:0 7px 7px 0;font-size:12.5px;color:var(--ink-2);margin-top:13px;line-height:1.8}
 .note.info{border-color:var(--s1)}
-.note strong{color:var(--ink)}
+.note b{color:var(--ink)}
 
-/* ---------- stat tiles ---------- */
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:10px;margin-bottom:14px}
-.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 15px}
-.tile .k{font-size:11.5px;color:var(--ink-2);margin-bottom:5px;font-weight:500}
-.tile .v{font-size:22px;font-weight:660;letter-spacing:-0.02em;line-height:1.15}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 16px}
+.tile .k{font-size:12px;color:var(--ink-2);margin-bottom:5px;font-weight:500}
+.tile .v{font-size:23px;font-weight:660;letter-spacing:-0.02em;line-height:1.15}
 .tile .u{font-size:11.5px;color:var(--muted);margin-top:3px}
 .v.pos{color:var(--good-text)} .v.neg{color:var(--critical)}
+.tile.hero{border-color:var(--s1);border-width:2px}
 
-/* ---------- tables ---------- */
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{border-collapse:collapse;width:100%;font-size:12.5px}
 th,td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--grid);white-space:nowrap}
-th{
-  font-size:11px;font-weight:600;color:var(--ink-2);
-  position:sticky;top:0;background:var(--surface);z-index:1;
-  border-bottom:1px solid var(--axis);
-}
+th{font-size:11px;font-weight:600;color:var(--ink-2);position:sticky;top:0;background:var(--surface);z-index:1;border-bottom:1px solid var(--axis)}
 td.num,th.num{font-variant-numeric:tabular-nums}
 tbody tr:hover{background:var(--surface-2)}
 tfoot td{font-weight:650;border-top:1px solid var(--axis);border-bottom:0;background:var(--surface-2)}
-table input{padding:4px 6px;font-size:12.5px;min-width:82px}
-table input.name{min-width:150px;text-align:right}
-.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-start:6px;vertical-align:middle}
+table input,table select{padding:4px 6px;font-size:12.5px;min-width:78px}
+table input.name{min-width:145px;text-align:right}
+table select.cur{min-width:74px}
 
-/* ---------- charts ---------- */
-.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:14px}
-.chart-head{margin-bottom:2px}
-.chart-head .t{font-size:14px;font-weight:600}
-.chart-head .d{font-size:11.5px;color:var(--ink-2);margin-top:2px}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
+.chart-head .t{font-size:14.5px;font-weight:600}
+.chart-head .d{font-size:12px;color:var(--ink-2);margin-top:2px}
 .viz{direction:ltr;width:100%;overflow:visible}
-.legend{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 2px;direction:rtl}
-.legend .item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:11px;margin:10px 0 2px;direction:rtl}
+.legend .item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-2)}
 .legend .sw{width:11px;height:11px;border-radius:2px;flex:none}
-/* نمودارها LTR هستند تا هندسه محورها درست بماند؛ اما هر برچسب متنی
-   باید جهت خودش را از اولین حرف قوی‌اش بگیرد وگرنه «۱٫۵ میلیون»
-   وارونه («میلیون ۱٫۵») نمایش داده می‌شود. */
 text{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;unicode-bidi:plaintext}
 .tick{fill:var(--muted);font-size:10px}
 .dlabel{fill:var(--ink-2);font-size:10.5px;font-variant-numeric:tabular-nums}
 .gridline{stroke:var(--grid);stroke-width:1}
 .baseline{stroke:var(--axis);stroke-width:1}
 
-/* tooltip */
-#tip{
-  position:fixed;pointer-events:none;z-index:50;opacity:0;transition:opacity .1s;
-  background:var(--surface);border:1px solid var(--axis);border-radius:8px;
-  padding:8px 11px;font-size:12px;box-shadow:0 6px 22px rgba(0,0,0,.16);
-  max-width:270px;direction:rtl;
-}
+#tip{position:fixed;pointer-events:none;z-index:50;opacity:0;transition:opacity .1s;background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:8px 11px;font-size:12px;box-shadow:0 6px 22px rgba(0,0,0,.16);max-width:280px;direction:rtl}
 #tip .th{font-weight:650;margin-bottom:5px}
 #tip .tr{display:flex;justify-content:space-between;gap:14px;line-height:1.65}
 #tip .tr .lb{color:var(--ink-2);display:flex;align-items:center;gap:5px}
 #tip .tr .vl{font-variant-numeric:tabular-nums}
-.hit{cursor:crosshair}
 
-#toast{
-  position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:60;
-  max-width:min(460px,92vw);
-  background:var(--ink);color:var(--plane);
-  padding:10px 15px;border-radius:9px;font-size:12.5px;line-height:1.55;
-  box-shadow:0 8px 26px rgba(0,0,0,.24);
-  opacity:0;pointer-events:none;transition:opacity .18s;
-}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:60;max-width:min(460px,92vw);background:var(--ink);color:var(--plane);padding:10px 15px;border-radius:9px;font-size:12.5px;line-height:1.55;box-shadow:0 8px 26px rgba(0,0,0,.24);opacity:0;pointer-events:none;transition:opacity .18s}
 #toast.show{opacity:1}
 
-details.learn{
-  margin-top:12px;border:1px solid var(--border);border-radius:8px;
-  background:var(--surface-2);overflow:hidden;
-}
-details.learn + details.learn{margin-top:8px}
-details.learn > summary{
-  cursor:pointer;list-style:none;padding:8px 12px;
-  font-size:12.5px;font-weight:600;color:var(--ink-2);
-  display:flex;align-items:center;gap:7px;
-}
-details.learn > summary::-webkit-details-marker{display:none}
-details.learn > summary::before{
-  content:"؟";width:17px;height:17px;border-radius:50%;flex:none;
-  background:var(--s1);color:#fff;font-size:11px;font-weight:700;
-  display:inline-flex;align-items:center;justify-content:center;
-}
-details.learn > summary:hover{color:var(--ink)}
-details.learn[open] > summary{border-bottom:1px solid var(--border)}
-details.learn .body{padding:11px 13px;font-size:12.5px;line-height:1.8;color:var(--ink-2)}
-details.learn .body strong{color:var(--ink)}
-details.learn .body p{margin:0 0 9px}
-details.learn .body p:last-child{margin:0}
-details.learn .ex{
-  margin-top:10px;padding:9px 11px;border-radius:6px;
-  background:var(--surface);border:1px solid var(--border);
-  font-size:12px;color:var(--ink-2);
-}
-details.learn .ex b{color:var(--ink)}
-
-/* دکمه «؟» کنار هر فیلد */
-.qbtn{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:15px;height:15px;margin-inline-start:5px;padding:0;flex:none;
-  border:0;border-radius:50%;cursor:pointer;vertical-align:middle;
-  background:var(--s1);color:#fff;font-size:10px;font-weight:700;line-height:1;
-}
+.qbtn{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-inline-start:5px;padding:0;flex:none;border:0;border-radius:50%;cursor:pointer;vertical-align:middle;background:var(--s1);color:#fff;font-size:10px;font-weight:700;line-height:1}
 .qbtn:hover{filter:brightness(1.15)}
 th .qbtn{background:rgba(255,255,255,.30)}
-th .qbtn:hover{background:rgba(255,255,255,.5)}
-
-/* پنجره راهنما */
-#helpOverlay{
-  position:fixed;inset:0;z-index:80;display:flex;
-  align-items:center;justify-content:center;padding:18px;
-  background:rgba(0,0,0,.45);
-}
+#helpOverlay{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.45)}
 #helpOverlay[hidden]{display:none}
-#helpCard{
-  background:var(--surface);color:var(--ink);
-  border:1px solid var(--border);border-radius:12px;
-  width:min(540px,100%);max-height:min(78vh,640px);overflow:auto;
-  padding:18px 20px 20px;box-shadow:0 18px 50px rgba(0,0,0,.3);
-}
-#helpGroup{font-size:11.5px;color:var(--muted);margin-bottom:2px}
+#helpCard{background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:12px;width:min(540px,100%);max-height:min(78vh,640px);overflow:auto;padding:18px 20px 20px;box-shadow:0 18px 50px rgba(0,0,0,.3)}
 #helpCard h3{font-size:17px;margin:0 0 12px;font-weight:650}
-#helpClose{
-  float:left;border:0;background:transparent;color:var(--ink-2);
-  font-size:20px;line-height:1;cursor:pointer;padding:0 2px;
-}
-#helpClose:hover{color:var(--ink)}
-.hs{margin-bottom:12px}
-.hs:last-child{margin-bottom:0}
-.hk{
-  font-size:11px;font-weight:700;color:var(--s1);
-  letter-spacing:.02em;margin-bottom:3px;
-}
+#helpClose{float:left;border:0;background:transparent;color:var(--ink-2);font-size:20px;line-height:1;cursor:pointer;padding:0 2px}
+.hs{margin-bottom:12px}.hs:last-child{margin-bottom:0}
+.hk{font-size:11px;font-weight:700;color:var(--s1);margin-bottom:3px}
 .hs p{margin:0;font-size:13px;line-height:1.85;color:var(--ink-2)}
 
-/* راهنمای کامل */
-.refh{
-  font-size:13px;font-weight:700;color:var(--ink);
-  margin:18px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--axis);
-}
-.refh:first-child{margin-top:4px}
-.refcard{
-  border:1px solid var(--border);border-radius:8px;
-  padding:11px 13px;margin-bottom:8px;background:var(--surface-2);
-  break-inside:avoid;
-}
-.reft{font-size:13.5px;font-weight:650;margin-bottom:8px}
-.refcard .hs{margin-bottom:8px}
+.adv{display:none}
+body.advanced .adv{display:initial}
+body.advanced tr.adv,body.advanced tbody.adv{display:table-row}
+body.advanced .f.adv,body.advanced .card.adv{display:flex}
+body.advanced .card.adv{display:block}
+body.advanced th.adv,body.advanced td.adv{display:table-cell}
+.advbadge{font-size:10.5px;background:var(--s4);color:#000;border-radius:4px;padding:1px 5px;margin-inline-start:6px;font-weight:600}
 
-details.tv{margin-top:12px}
-details.tv summary{cursor:pointer;font-size:12px;color:var(--ink-2);padding:4px 0}
-details.tv summary:hover{color:var(--ink)}
+footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;line-height:1.8}
+@media (max-width:640px){body{padding:10px}.tile .v{font-size:20px}.charts{grid-template-columns:1fr}}
 
-footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;line-height:1.7}
-
-@media (max-width:640px){
-  body{padding:10px}
-  .tile .v{font-size:19px}
-  .charts{grid-template-columns:1fr}
-}
-/* ---------- چاپ و خروجی PDF ---------- */
-@page{ size:A4 portrait; margin:12mm 10mm; }
-
+/* ---------- چاپ ---------- */
+@page{ size:A4 portrait; margin:13mm 11mm; }
 .printonly{display:none}
-
 @media print{
-  /* روی کاغذ همیشه پالت روشن، حتی اگر کاربر حالت تیره را انتخاب کرده باشد */
   :root,:root[data-theme="dark"]{
-    --plane:#fff; --surface:#fff; --surface-2:#f5f5f3;
-    --ink:#000; --ink-2:#2b2b2b; --muted:#5c5c5c;
-    --grid:#dedede; --axis:#9a9a9a; --border:rgba(0,0,0,.20);
-    --good-text:#006300;
+    --plane:#fff;--surface:#fff;--surface-2:#f5f5f3;--ink:#000;--ink-2:#2b2b2b;
+    --muted:#5c5c5c;--grid:#dedede;--axis:#9a9a9a;--border:rgba(0,0,0,.2);--good-text:#006300;
   }
   html,body{background:#fff!important}
-  body{padding:0;font-size:9.5pt;line-height:1.4}
+  body{padding:0;font-size:9.5pt;line-height:1.45}
   .wrap{max-width:none}
-
-  /* چیزهایی که روی کاغذ معنا ندارند */
-  .noprint,#tip,#toast,#helpOverlay,.qbtn,details.tv summary,#navasanField{display:none!important}
+  .noprint,#tip,#toast,#helpOverlay,.qbtn,details.tv summary{display:none!important}
   .printonly{display:block}
-
-  #printMeta{
-    font-size:8pt;color:#2b2b2b;
-    border-bottom:1px solid #bdbdb8;
-    padding-bottom:5px;margin:0 0 10px;
-  }
-
-  .card{
-    break-inside:avoid;page-break-inside:avoid;
-    border:1px solid #cfcfc9;border-radius:5px;
-    padding:9px 11px;margin:0 0 8px;
-  }
-  header.top{margin-bottom:8px}
-  h1{font-size:15pt;margin-bottom:1px}
-  h2{font-size:10.5pt;margin-bottom:7px}
-  .sub{font-size:8.5pt}
-
-  /* ورودی‌ها باید مثل متن دیده شوند، نه مثل کادر فرم */
-  input,select{
-    border:0!important;background:transparent!important;
-    padding:0!important;color:#000!important;
-    font-size:9.5pt!important;-webkit-appearance:none;appearance:none;
-  }
-  .fields{gap:7px 12px}
-  .f label{font-size:8pt}
-  .f .hint{font-size:7pt}
-
-  /* مهم‌ترین اصلاح: روی کاغذ اسکرول وجود ندارد، پس overflow ستون‌ها را می‌بُرد */
+  #printMeta{font-size:8.5pt;color:#2b2b2b;border-bottom:1px solid #bdbdb8;padding-bottom:6px;margin:0 0 11px}
+  .card{break-inside:avoid;border:1px solid #cfcfc9;border-radius:5px;padding:10px 12px;margin:0 0 9px}
+  h1{font-size:16pt} .step h2{font-size:11pt} .step .n{width:19px;height:19px;font-size:10pt}
+  .why{font-size:8.5pt;margin-bottom:9px}
+  input,select{border:0!important;background:transparent!important;padding:0!important;color:#000!important;font-size:9.5pt!important;-webkit-appearance:none;appearance:none}
+  .pair{gap:3px}
   .scroll{overflow:visible!important}
-  table{font-size:7.5pt;width:100%;table-layout:fixed}
-  table input{width:100%;min-width:0!important;font-size:7.5pt!important}
-  th,td{
-    padding:3px;white-space:normal;overflow-wrap:anywhere;
-    border-bottom:1px solid #e3e3e0;
-  }
-  th{font-size:7pt;background:#eeeeec!important}
-  thead{display:table-header-group}          /* تکرار سربرگ در صفحه بعد */
-  tr{break-inside:avoid}
-  /* <input> متن را نمی‌شکند و فقط می‌بُرد. روی کاغذ به‌جای خود ورودی،
-     مقدارش را به شکل متن معمولی چاپ می‌کنیم تا نام کامل و شکسته دیده شود. */
-  #inBody td input{display:none}
-  #inBody td::after{
-    content:attr(data-print);
-    display:block;white-space:normal;overflow-wrap:anywhere;
-  }
-  /* جدول کالاها ۱۳ ستون دارد؛ کمی ریزتر تا عددهای ۸ رقمی وسط عدد نشکنند */
-  #inTable{font-size:6.8pt}
-  #inTable td::after,#inTable th{font-size:6.8pt}
-  #inTable th:first-child,#inTable td:first-child{width:16%}
-  #outTable th:first-child,#outTable td:first-child{width:15%}
-
-  .tiles{grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
-  .tile{padding:7px 9px;border:1px solid #d8d8d3;break-inside:avoid}
-  .tile .k{font-size:7.5pt;margin-bottom:2px}
-  .tile .v{font-size:12.5pt}
-  .tile .u{font-size:7pt}
-
-  .charts{grid-template-columns:1fr!important;gap:8px}
-  svg.viz{height:auto!important}             /* جلوگیری از حاشیه خالی بالا و پایین */
-  .legend{margin:6px 0 2px}
-  .legend .item{font-size:7.5pt}
-  .chart-head .t{font-size:10pt}
-  .chart-head .d{font-size:7.5pt}
-
-  .note{padding:6px 9px;font-size:8pt;border-inline-start-width:2px}
-  footer{font-size:7.5pt;padding:10px 0 0;color:#3a3a3a}
-
-  /* بدون این، مرورگر نمودارها و کاشی‌ها را سفید چاپ می‌کند */
-  svg,.tile,.note,th,.card{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  table{font-size:8pt;width:100%;table-layout:fixed}
+  table input,table select{width:100%;min-width:0!important;font-size:8pt!important}
+  th,td{padding:3px;white-space:normal;overflow-wrap:anywhere;border-bottom:1px solid #e3e3e0}
+  th{font-size:7.5pt;background:#eeeeec!important}
+  thead{display:table-header-group} tr{break-inside:avoid}
+  #inBody td input,#inBody td select{display:none}
+  #inBody td::after{content:attr(data-print);display:block;white-space:normal;overflow-wrap:anywhere}
+  #inTable th:first-child,#inTable td:first-child{width:20%}
+  .tiles{grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px}
+  .tile{padding:8px 10px;border:1px solid #d8d8d3;break-inside:avoid}
+  .tile .v{font-size:13pt}.tile .k{font-size:8pt}.tile .u{font-size:7.5pt}
+  .charts{grid-template-columns:1fr!important;gap:9px}
+  svg.viz{height:auto!important}
+  .legend .item{font-size:8pt}
+  .note{padding:7px 10px;font-size:8.5pt}
+  footer{font-size:8pt;padding:10px 0 0}
+  svg,.tile,.note,th,.card,.step .n{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -387,304 +203,260 @@ footer{color:var(--muted);font-size:11.5px;text-align:center;padding:18px 0 6px;
 
 <header class="top">
   <div>
-    <h1>محاسبه‌گر بهای تمام‌شده واردات لوازم آرایشی</h1>
-    <p class="sub">دبی ← بندرعباس ← تهران · قیمت خرید به درهم، بهای تمام‌شده و سود به ریال/تومان</p>
+    <h1>حساب‌کتاب واردات</h1>
+    <p class="sub">جنس را از خارج می‌خرید، تا ایران می‌آورید — این ابزار می‌گوید هر عدد چند تمام می‌شود.</p>
   </div>
   <div class="controls noprint">
-    <div class="seg" role="group" aria-label="واحد پول نمایش">
+    <div class="seg" role="group" aria-label="حالت">
+      <button type="button" data-mode="simple" aria-pressed="true">ساده</button>
+      <button type="button" data-mode="advanced" aria-pressed="false">پیشرفته</button>
+    </div>
+    <div class="seg" role="group" aria-label="واحد پول">
       <button type="button" data-unit="toman" aria-pressed="true">تومان</button>
       <button type="button" data-unit="rial" aria-pressed="false">ریال</button>
-      <button type="button" data-unit="mtoman" aria-pressed="false">میلیون تومان</button>
     </div>
     <button type="button" id="themeBtn" class="ghost" title="روشن / تیره">◐</button>
-    <button type="button" id="helpBtn" class="ghost">راهنمای فیلدها</button>
-    <button type="button" id="printBtn" class="ghost">چاپ</button>
-    <button type="button" id="csvBtn" class="ghost">خروجی CSV</button>
+    <button type="button" id="printBtn" class="ghost">چاپ / PDF</button>
+    <button type="button" id="csvBtn" class="ghost">اکسل</button>
+    <button type="button" id="helpBtnTop" class="ghost">راهنما</button>
   </div>
 </header>
 
 <div class="printonly" id="printMeta"></div>
 
-<!-- ============ FX ============ -->
+<!-- ============ ۱ · ارز ============ -->
 <section class="card">
-  <h2>۱ · نرخ ارز <span style="font-weight:400;color:var(--muted);font-size:12px">— بازار آزاد</span></h2>
-
-  <div class="fxbar noprint">
-    <button type="button" id="fetchBtn" class="primary">به‌روزرسانی خودکار نرخ</button>
-    <span class="chip" id="fxChip"><span class="dot warn"></span><span id="fxChipText">نرخ نمونه — هنوز به‌روزرسانی نشده</span></span>
-  </div>
+  <div class="step"><span class="n">۱</span><h2>ارز را مشخص کنید</h2></div>
+  <p class="why">
+    شما جنس را به <b>دلار، درهم، یوان</b> یا هر ارز دیگری می‌خرید، ولی سود را به <b>تومان</b> حساب می‌کنید.
+    فقط یک عدد لازم است: <b>قیمت دلار در بازار آزاد</b>. بقیه ارزها خودشان از روی آن حساب می‌شوند.
+  </p>
 
   <div class="fields">
     <div class="f">
-      <label for="usdIrr">دلار آمریکا → ریال (بازار آزاد)</label>
+      <label for="usdIrr">قیمت دلار (تومان)</label>
       <input type="number" id="usdIrr" step="1000" min="0">
-      <span class="hint">نرخ آزاد، نه نرخ مرجع/نیما</span>
+      <span class="hint">نرخ بازار آزاد امروز — از صرافی بپرسید</span>
     </div>
     <div class="f">
-      <label for="aedIrr">درهم امارات → ریال (بازار آزاد)</label>
-      <input type="number" id="aedIrr" step="1000" min="0">
-      <span class="hint">مبنای اصلی محاسبه خرید</span>
+      <label>&nbsp;</label>
+      <button type="button" id="fetchBtn" class="primary">دریافت خودکار نرخ‌ها</button>
     </div>
-    <div class="f">
-      <label for="usdAed">دلار → درهم (میخکوب)</label>
-      <input type="number" id="usdAed" step="0.0001" min="0">
-      <span class="hint">درهم به دلار میخکوب است (۳٫۶۷۲۵) و تقریباً ثابت می‌ماند</span>
-    </div>
-    <div class="f">
-      <label for="purchaseAedIrr">نرخ درهم در روز خرید</label>
-      <input type="number" id="purchaseAedIrr" step="1000" min="0">
-      <span class="hint">برای سنجش ریسک ارزی: سود واقعی با نرخ امروز مقایسه می‌شود</span>
-    </div>
-    <div class="f" id="navasanField">
-      <label for="navasanKey">کلید API نوسان (اختیاری)</label>
-      <input type="text" id="navasanKey" placeholder="navasan.tech API key" autocomplete="off">
-      <span class="hint">مطمئن‌ترین منبع نرخ آزاد. بدون کلید، منابع عمومی امتحان می‌شوند</span>
+    <div class="f" style="justify-content:flex-end">
+      <span class="chip" id="fxChip"><span class="dot warn"></span><span id="fxChipText">نرخ نمونه</span></span>
     </div>
   </div>
 
-  <div class="note" id="fxNote">
-    <strong>مهم:</strong> سرویس‌های عمومی ارز (مثل exchangerate یا Google) نرخ <strong>رسمی</strong> ریال را می‌دهند، نه نرخ
-    <strong>بازار آزاد</strong>. اگر بهای تمام‌شده را با نرخ رسمی حساب کنید، عدد چند برابر کمتر از واقعیت درمی‌آید.
-    این ابزار فقط نرخ آزاد را مبنا می‌گیرد — اگر به‌روزرسانی خودکار جواب نداد، نرخ را دستی از صرافی وارد کنید.
+  <div class="scroll" style="margin-top:14px">
+    <table id="fxTable">
+      <thead><tr id="fxHead"></tr></thead>
+      <tbody><tr id="fxBody"></tr></tbody>
+    </table>
   </div>
+  <p class="hint" style="margin:7px 0 0;color:var(--muted)">
+    هر خانه = قیمت یک واحد آن ارز به تومان. اگر عددی درست نبود، دستی اصلاحش کنید.
+  </p>
 </section>
 
-<!-- ============ shipment ============ -->
+<!-- ============ ۲ · هزینه آوردن ============ -->
 <section class="card">
-  <h2>۲ · پارامترهای محموله <span style="font-weight:400;color:var(--muted);font-size:12px">— مشترک بین همه کالاها</span></h2>
+  <div class="step"><span class="n">۲</span><h2>هزینه آوردن جنس تا ایران</h2></div>
+  <p class="why">
+    اینها هزینه‌های <b>کل محموله</b> است، نه هر کالا — ابزار خودش بین کالاها تقسیم می‌کند.
+    هر مبلغ را به هر ارزی که پرداخت کرده‌اید وارد کنید.
+  </p>
+
   <div class="fields">
     <div class="f">
-      <label for="freightPerKgAed">کرایه دبی ← بندرعباس (درهم بر کیلو)</label>
-      <input type="number" id="freightPerKgAed" step="0.1" min="0">
+      <label for="freightAmt">کرایه حمل تا ایران</label>
+      <div class="pair">
+        <input type="number" id="freightAmt" step="10" min="0">
+        <select id="freightCur"></select>
+      </div>
+      <span class="hint">دریایی، زمینی یا هوایی — مبلغ کل</span>
     </div>
     <div class="f">
-      <label for="insurancePct">بیمه (٪ ارزش کالا)</label>
-      <input type="number" id="insurancePct" step="0.1" min="0">
+      <label for="customsAmt">ترخیص و گمرک</label>
+      <div class="pair">
+        <input type="number" id="customsAmt" step="1000000" min="0">
+        <select id="customsCur"></select>
+      </div>
+      <span class="hint">هرچه بابت گمرک و ترخیص‌کار دادید، یک‌جا</span>
     </div>
     <div class="f">
-      <label for="dutyPct">حقوق ورودی گمرک (٪)</label>
-      <input type="number" id="dutyPct" step="1" min="0">
-      <span class="hint">روی ارزش CIF. برای آرایشی معمولاً بالاست — از ترخیص‌کار بگیرید</span>
+      <label for="otherAmt">سایر هزینه‌ها</label>
+      <div class="pair">
+        <input type="number" id="otherAmt" step="1000000" min="0">
+        <select id="otherCur"></select>
+      </div>
+      <span class="hint">انبار، حمل داخلی، بسته‌بندی، مجوز</span>
     </div>
     <div class="f">
-      <label for="customsUpliftPct">ضریب ارزش گمرکی (٪ بالاتر از فاکتور)</label>
-      <input type="number" id="customsUpliftPct" step="1" min="0">
-      <span class="hint">اگر گمرک ارزش را بالاتر از فاکتور شما می‌بندد. صفر = فاکتور مبناست</span>
-    </div>
-    <div class="f">
-      <label for="inlandPerKgIrr">حمل بندرعباس ← تهران (ریال بر کیلو)</label>
-      <input type="number" id="inlandPerKgIrr" step="1000" min="0">
-    </div>
-    <div class="f">
-      <label for="clearanceLumpIrr">ترخیص، انبارداری، اسناد (ریال — کل محموله)</label>
-      <input type="number" id="clearanceLumpIrr" step="1000000" min="0">
-    </div>
-    <div class="f">
-      <label for="otherLumpIrr">سایر هزینه‌های محموله (ریال — کل)</label>
-      <input type="number" id="otherLumpIrr" step="1000000" min="0">
-      <span class="hint">مجوز، برچسب اصالت، آزمایشگاه، حق‌العمل</span>
-    </div>
-    <div class="f">
-      <label for="allocBasis">سرشکن‌کردن هزینه‌های کل بر مبنای</label>
-      <select id="allocBasis">
-        <option value="weight">وزن (کیلوگرم)</option>
-        <option value="value">ارزش کالا (درهم)</option>
+      <label for="split">تقسیم هزینه بین کالاها بر اساس</label>
+      <select id="split">
+        <option value="value">قیمت کالا</option>
+        <option value="weight">وزن کالا</option>
       </select>
-      <span class="hint">کرایه همیشه بر مبنای وزن است؛ این گزینه فقط برای مبالغ مقطوع بالاست</span>
-    </div>
-    <div class="f">
-      <label for="vatPct">ارزش افزوده (٪)</label>
-      <input type="number" id="vatPct" step="0.5" min="0">
-    </div>
-    <div class="f">
-      <label for="vatRecoverable">ارزش افزوده گمرک قابل استرداد است؟</label>
-      <select id="vatRecoverable">
-        <option value="yes">بله — مؤدی ثبت‌نام‌شده هستیم</option>
-        <option value="no">خیر — جزو بهای تمام‌شده است</option>
-      </select>
-      <span class="hint">اگر ثبت‌نام مالیاتی دارید، VAT پرداختی گمرک با VAT فروش تهاتر می‌شود و هزینه نیست</span>
+      <span class="hint">کالای گران‌تر (یا سنگین‌تر) سهم بیشتری برمی‌دارد</span>
     </div>
   </div>
 
+  <div class="fields adv" style="margin-top:13px">
+    <div class="f">
+      <label for="dutyPct">حقوق ورودی گمرک (٪)<span class="advbadge">پیشرفته</span></label>
+      <input type="number" id="dutyPct" step="1" min="0">
+      <span class="hint">اگر جدا از مبلغ ترخیص بالا حساب می‌کنید</span>
+    </div>
+    <div class="f">
+      <label for="vatPct">ارزش افزوده (٪)<span class="advbadge">پیشرفته</span></label>
+      <input type="number" id="vatPct" step="0.5" min="0">
+      <span class="hint">صفر بگذارید اگر نمی‌خواهید دخالت کند</span>
+    </div>
+  </div>
 </section>
 
-<!-- ============ products ============ -->
+<!-- ============ ۳ · کالاها ============ -->
 <section class="card">
-  <h2>۳ · کالاها</h2>
+  <div class="step"><span class="n">۳</span><h2>کالاها را وارد کنید</h2></div>
+  <p class="why">
+    برای هر کالا: چند خریدید، به چه ارزی، چند تا، و چند می‌فروشید.
+    ستون‌های <b>خاکستری</b> خودکار پر می‌شوند.
+  </p>
+
   <div class="scroll">
     <table id="inTable">
-      <thead>
-        <tr>
-          <th>نام محصول</th>
-          <th class="num">قیمت خرید<br>هر واحد (درهم)</th>
-          <th class="num">تعداد</th>
-          <th class="num">وزن کل<br>(کیلوگرم)</th>
-          <th class="num">ارزش گمرکی<br>هر واحد (درهم)</th>
-          <th class="num">تعرفه این کالا<br>(٪)</th>
-          <th class="num">ضایعات و<br>مرجوعی (٪)</th>
-          <th class="num">هزینه جانبی<br>هر واحد (ریال)</th>
-          <th class="num">قیمت روز بازار<br>تهران (ریال)</th>
-          <th class="num">قیمت فروش من<br>(ریال، با VAT)</th>
-          <th class="num">هزینه فروش<br>(٪)</th>
-          <th class="num">روز خرید<br>تا فروش</th>
-          <th class="noprint"></th>
-        </tr>
-      </thead>
+      <thead><tr id="inHead"></tr></thead>
       <tbody id="inBody"></tbody>
     </table>
   </div>
-  <div class="controls noprint" style="margin-top:12px">
+
+  <div class="controls noprint" style="margin-top:13px">
     <button type="button" id="addRow">+ افزودن کالا</button>
-    <button type="button" id="resetBtn" class="ghost">بازگشت به مقادیر نمونه</button>
+    <button type="button" id="resetBtn" class="ghost">مقادیر نمونه</button>
     <span style="flex:1"></span>
-    <label for="targetMarginPct" style="font-size:12.5px;color:var(--ink-2)">حاشیه سود هدف</label>
-    <input type="number" id="targetMarginPct" step="1" min="0" max="99" style="width:74px">
+    <label for="targetMarginPct" style="font-size:12.5px;color:var(--ink-2)">سود دلخواه</label>
+    <input type="number" id="targetMarginPct" step="1" min="0" max="95" style="width:70px">
     <span style="font-size:12.5px;color:var(--ink-2)">٪</span>
-    <button type="button" id="applyTarget">اعمال به همه کالاها</button>
+    <button type="button" id="applyTarget">قیمت‌گذاری خودکار</button>
   </div>
-
-
-
 </section>
 
-<!-- ============ results ============ -->
+<!-- ============ نتیجه ============ -->
 <div class="tiles" id="tiles"></div>
 
 <section class="card">
-  <h2>۴ · بهای تمام‌شده و سود هر کالا</h2>
+  <div class="step"><span class="n">۴</span><h2>نتیجه</h2></div>
+  <p class="why">
+    <b>بهای تمام‌شده</b> یعنی هر عدد از این کالا، تا وقتی در انبار شما در ایران باشد، چند تمام شده.
+    زیر این قیمت بفروشید یعنی ضرر.
+  </p>
   <div class="scroll">
     <table id="outTable">
-      <thead>
-        <tr>
-          <th>محصول</th>
-          <th class="num">بهای تمام‌شده<br>هر واحد</th>
-          <th class="num">قیمت فروش<br>بدون VAT</th>
-          <th class="num">سود<br>هر واحد</th>
-          <th class="num">حاشیه سود<br>٪</th>
-          <th class="num">سود کل<br>ردیف</th>
-          <th class="num">نقطه سربه‌سر<br>(قیمت فروش)</th>
-          <th class="num">قیمت پیشنهادی<br>(حاشیه هدف)</th>
-          <th class="num">نرخ سربه‌سر<br>درهم</th>
-          <th class="num">بازده<br>سالانه‌شده ٪</th>
-          <th class="num">فاصله تا<br>بازار تهران</th>
-        </tr>
-      </thead>
+      <thead><tr id="outHead"></tr></thead>
       <tbody id="outBody"></tbody>
       <tfoot id="outFoot"></tfoot>
     </table>
   </div>
-  <div class="note info" id="fxRiskNote"></div>
+  <div class="note info" id="riskNote"></div>
 </section>
 
 <div class="charts">
   <section class="card">
     <div class="chart-head">
-      <div class="t">ساختار بهای تمام‌شده هر واحد</div>
-      <div class="d">هر ستون = یک کالا. ارتفاع = بهای تمام‌شده یک واحد، تفکیک‌شده به اجزا.</div>
+      <div class="t">هزینه هر کالا از چه ساخته شده</div>
+      <div class="d">ارتفاع هر ستون = بهای تمام‌شده یک عدد از آن کالا.</div>
     </div>
     <div class="legend" id="lgStack"></div>
-    <svg class="viz" id="chStack" role="img" aria-label="نمودار ستونی انباشته ساختار هزینه"></svg>
-    <details class="tv"><summary>نمایش جدولی این نمودار</summary><div class="scroll" id="tblStack"></div></details>
+    <svg class="viz" id="chStack" role="img" aria-label="ساختار هزینه"></svg>
+    <details class="tv"><summary>نمایش جدولی</summary><div class="scroll" id="tblStack"></div></details>
   </section>
 
   <section class="card">
     <div class="chart-head">
-      <div class="t">حاشیه سود هر کالا</div>
-      <div class="d">درصد سود نسبت به فروش خالص. آبی = سودده، قرمز = زیان‌ده.</div>
+      <div class="t">سود هر کالا</div>
+      <div class="d">آبی = سود می‌دهد، قرمز = ضرر می‌دهد.</div>
     </div>
-    <svg class="viz" id="chMargin" role="img" aria-label="نمودار حاشیه سود هر کالا"></svg>
-    <details class="tv"><summary>نمایش جدولی این نمودار</summary><div class="scroll" id="tblMargin"></div></details>
+    <svg class="viz" id="chMargin" role="img" aria-label="سود هر کالا"></svg>
+    <details class="tv"><summary>نمایش جدولی</summary><div class="scroll" id="tblMargin"></div></details>
   </section>
 
-  <section class="card">
+  <section class="card adv">
     <div class="chart-head">
-      <div class="t">حساسیت سود به نرخ درهم</div>
-      <div class="d">اگر قیمت‌های فروش ثابت بماند، حاشیه سود کل با تغییر نرخ درهم چه می‌شود.</div>
+      <div class="t">اگر دلار گران شود چه می‌شود؟<span class="advbadge">پیشرفته</span></div>
+      <div class="d">با قیمت‌های فروش فعلی، سود کل در نرخ‌های مختلف دلار.</div>
     </div>
-    <svg class="viz hit" id="chSens" role="img" aria-label="نمودار حساسیت حاشیه سود به نرخ درهم"></svg>
-    <details class="tv"><summary>نمایش جدولی این نمودار</summary><div class="scroll" id="tblSens"></div></details>
-  </section>
-
-  <section class="card">
-    <div class="chart-head">
-      <div class="t">نرخ درهمی که در آن هر کالا سربه‌سر می‌شود</div>
-      <div class="d">خط عمودی = نرخ امروز. هرچه میله از خط دورتر باشد، حاشیه امنیت ارزی بیشتر است.</div>
-    </div>
-    <svg class="viz" id="chBreak" role="img" aria-label="نمودار نرخ درهم سربه‌سر هر کالا"></svg>
-    <details class="tv"><summary>نمایش جدولی این نمودار</summary><div class="scroll" id="tblBreak"></div></details>
+    <svg class="viz" id="chSens" role="img" aria-label="حساسیت به نرخ دلار"></svg>
+    <details class="tv"><summary>نمایش جدولی</summary><div class="scroll" id="tblSens"></div></details>
   </section>
 </div>
 
 <section class="card">
-  <h2>راهنمای فیلدها</h2>
-  <p class="sub" style="margin-bottom:4px">
-    کنار هر فیلد در صفحه یک دکمه <strong>؟</strong> هست که همین توضیح را همان‌جا نشان می‌دهد.
-    این بخش همه را یک‌جا دارد و اگر بازش بگذارید، همراه بقیه صفحه چاپ می‌شود.
-  </p>
+  <div class="step"><span class="n">؟</span><h2>راهنما</h2></div>
+  <p class="why">کنار هر خانه یک دکمه <b>؟</b> هست که همان‌جا توضیح می‌دهد. این بخش همه را یک‌جا دارد.</p>
   <details class="tv" id="helpRefWrap">
-    <summary>باز کردن راهنمای کامل همه فیلدها</summary>
+    <summary>باز کردن راهنمای کامل</summary>
     <div id="helpRef"></div>
   </details>
 </section>
 
 <footer>
-  <span class="noprint">همه اعداد در مرورگر شما محاسبه و ذخیره می‌شوند — چیزی به سروری فرستاده نمی‌شود.<br></span>
-  مقادیر پیش‌فرض <strong>نمونه</strong> هستند؛ قبل از تصمیم‌گیری، نرخ ارز و تعرفه گمرکی را با صرافی و ترخیص‌کار خود تأیید کنید.
+  <span class="noprint">همه چیز در مرورگر خودتان حساب و ذخیره می‌شود — چیزی به هیچ سروری نمی‌رود.<br></span>
+  اعداد پیش‌فرض <b>نمونه</b>اند. نرخ ارز و هزینه ترخیص را با صرافی و ترخیص‌کار خودتان چک کنید.
 </footer>
 
 </div>
 <div id="tip" role="status" aria-live="polite"></div>
-
 <div id="helpOverlay" hidden>
   <div id="helpCard" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <button type="button" id="helpClose" aria-label="بستن">&times;</button>
-    <div id="helpGroup"></div>
     <h3 id="helpTitle"></h3>
     <div id="helpBody"></div>
   </div>
 </div>
-
 <script>
 "use strict";
 
-/* =======================================================================
-   وضعیت
-   ======================================================================= */
-const STORE_KEY = "cosmetics-landed-cost-v1";
-const USD_AED_PEG = 3.6725;
+const STORE = "import-cost-simple-v2";
+
+/* ارزها. rates = چند واحد از این ارز به ازای ۱ دلار. */
+const CUR = [
+  {c:"USD", fa:"دلار",       per:1},
+  {c:"AED", fa:"درهم",       per:3.6725},
+  {c:"CNY", fa:"یوان",       per:7.10},
+  {c:"EUR", fa:"یورو",       per:0.92},
+  {c:"TRY", fa:"لیر",        per:34.0},
+  {c:"GBP", fa:"پوند",       per:0.79},
+  {c:"RUB", fa:"روبل",       per:90.0}
+];
+const LOCAL = {c:"IRT", fa:"تومان"};
+const COST_CUR = CUR.concat([LOCAL]);
 
 function sampleState(){
-  const usdIrr = 1150000;                       // نمونه — باید به‌روز شود
-  const aedIrr = Math.round(usdIrr / USD_AED_PEG);
+  const rates = {}; CUR.forEach(x => rates[x.c] = x.per);
   return {
-    unit:"toman",
-    fx:{ usdIrr, aedIrr, usdAed:USD_AED_PEG, source:null, fetchedAt:null, placeholder:true },
-    purchaseAedIrr: aedIrr,
-    navasanKey:"",
-    targetMarginPct:35,
+    unit:"toman", mode:"simple",
+    fx:{ usdToman:115000, rates, source:null, fetchedAt:null, placeholder:true },
+    purchaseUsdToman:115000,
     ship:{
-      freightPerKgAed:2.5, insurancePct:0.5, dutyPct:40, customsUpliftPct:0,
-      inlandPerKgIrr:120000, clearanceLumpIrr:900000000, otherLumpIrr:450000000,
-      allocBasis:"weight", vatPct:10, vatRecoverable:"yes"
+      freight:{amount:1800, cur:"USD"},
+      customs:{amount:1400000000, cur:"IRT"},
+      other:{amount:95000000, cur:"IRT"},
+      split:"value", dutyPct:0, vatPct:0
     },
+    targetMarginPct:35,
     rows:[
-      //   نام، درهم، تعداد، وزن، جانبی، بازار، فروش، هزینه‌فروش٪، روز، تعرفه٪، ارزش گمرکی، ضایعات٪
-      row("کرم پودر (۳۰ میلی‌لیتر)",       32,  600, 42, 400000, 40600000, 37600000, 12,  75, "",  0, 3),
-      row("رژ لب مایع",                    14, 1200, 30, 250000, 17700000, 16400000, 12,  60, "",  0, 4),
-      row("پالت سایه چشم",                 48,  300, 39, 500000, 61500000, 56900000, 15, 110, "",  0, 6),
-      row("سرم ویتامین ث (۳۰ میلی‌لیتر)",  55,  400, 32, 450000, 68700000, 63600000, 10,  90, "",  0, 5),
-      row("ریمل حجم‌دهنده",                18,  900, 27, 300000, 22700000, 21000000, 12,  65, "",  0, 4)
+      row("کرم پودر",      "AED", 32,  600, 42, 2610000),
+      row("رژ لب",         "AED", 14, 1200, 30, 1140000),
+      row("پالت سایه",     "USD", 13,  300, 39, 3890000),
+      row("سرم ویتامین ث", "USD", 15,  400, 32, 4490000),
+      row("ریمل",          "CNY", 35,  900, 27, 1470000)
     ]
   };
 }
 let uid = 1;
-function row(name,unitPriceAed,qty,weightKg,extraPerUnitIrr,marketPriceIrr,sellPriceIrr,
-             sellCostPct,daysHeld,dutyPctRow,customsValueAed,lossPct){
-  return {id:uid++,name,unitPriceAed,qty,weightKg,extraPerUnitIrr,marketPriceIrr,sellPriceIrr,
-          sellCostPct,daysHeld,
-          dutyPctRow:     dutyPctRow     === undefined ? ""  : dutyPctRow,
-          customsValueAed:customsValueAed === undefined ? 0  : customsValueAed,
-          lossPct:        lossPct        === undefined ? 0   : lossPct};
+function row(name, cur, unitPrice, qty, weightKg, sellPrice){
+  return {id:uid++, name, cur, unitPrice, qty, weightKg, sellPrice,
+          sellCostPct:0, lossPct:0};
 }
 
 let state = load() || sampleState();
@@ -692,496 +464,470 @@ uid = Math.max(0, ...state.rows.map(r=>r.id)) + 1;
 
 function load(){
   try{
-    const raw = localStorage.getItem(STORE_KEY);
-    if(!raw) return null;
-    const s = JSON.parse(raw);
+    const s = JSON.parse(localStorage.getItem(STORE) || "null");
     if(!s || !Array.isArray(s.rows) || !s.fx || !s.ship) return null;
-    // داده‌های ذخیره‌شده پیش از افزودن این فیلدها نباید باعث NaN شوند
-    if(s.ship.customsUpliftPct == null) s.ship.customsUpliftPct = 0;
-    if(s.targetMarginPct == null) s.targetMarginPct = 35;
-    s.rows.forEach(r => {
-      if(r.dutyPctRow == null)      r.dutyPctRow = "";
-      if(r.customsValueAed == null) r.customsValueAed = 0;
-      if(r.lossPct == null)         r.lossPct = 0;
+    if(s.mode !== "advanced") s.mode = "simple";
+    s.rows.forEach(r=>{
+      if(r.sellCostPct == null) r.sellCostPct = 0;
+      if(r.lossPct == null) r.lossPct = 0;
+      if(!r.cur) r.cur = "USD";
     });
     return s;
   }catch(e){ return null; }
 }
-function save(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+const save = () => { try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} };
+
+const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; };
+const sum = (a,k) => a.reduce((x,y)=>x + (Number.isFinite(y[k])?y[k]:0), 0);
+
+/* یک واحد از این ارز چند تومان است */
+function toToman(cur){
+  if(cur === "IRT") return 1;
+  const per = num(state.fx.rates[cur]);
+  return per > 0 ? num(state.fx.usdToman)/per : 0;
+}
+/* ارزش یک مبلغ به دلار — برای محاسبه خطی‌بودن نسبت به نرخ دلار */
+function toUsd(cur, amount){
+  if(cur === "IRT") return 0;
+  const per = num(state.fx.rates[cur]);
+  return per > 0 ? num(amount)/per : 0;
 }
 
 /* =======================================================================
-   موتور محاسبه
+   محاسبه
    ======================================================================= */
 function compute(st){
-  const {fx, ship} = st;
-  const vat = ship.vatPct/100;
-  const vatIsCost = ship.vatRecoverable === "no";
-  const uplift = 1 + num(ship.customsUpliftPct)/100;
-  const rate = num(fx.aedIrr);
+  const sh = st.ship;
+  const duty = num(sh.dutyPct)/100;
+  const vat  = num(sh.vatPct)/100;
+  const taxMult = (1 + duty) * (1 + vat);
 
+  const items = [
+    {k:"freight",  o:sh.freight},
+    {k:"customs",  o:sh.customs},
+    {k:"other",    o:sh.other}
+  ];
+  const costToman = {}, costUsd = {};
+  let extraTotal = 0, extraUsd = 0, extraLocal = 0;
+  items.forEach(({k,o})=>{
+    const t = num(o.amount)*toToman(o.cur);
+    costToman[k] = t; extraTotal += t;
+    const u = toUsd(o.cur, o.amount);
+    costUsd[k] = u; extraUsd += u;
+    if(o.cur === "IRT") extraLocal += num(o.amount);
+  });
+
+  const totGoods  = st.rows.reduce((a,r)=>a + num(r.unitPrice)*num(r.qty)*toToman(r.cur), 0);
   const totWeight = st.rows.reduce((a,r)=>a + num(r.weightKg), 0);
-  const totFobAed = st.rows.reduce((a,r)=>a + num(r.unitPriceAed)*num(r.qty), 0);
-  const lump = num(ship.clearanceLumpIrr) + num(ship.otherLumpIrr);
-
-  // درصد تعرفه این ردیف: اگر خالی باشد از مقدار کلی محموله استفاده می‌شود.
-  // صفر یک تعرفه معتبر است، پس «خالی» با «صفر» یکی گرفته نمی‌شود.
-  const rowDuty = r => (r.dutyPctRow === "" || r.dutyPctRow == null)
-    ? num(ship.dutyPct) : num(r.dutyPctRow);
 
   const rows = st.rows.map(r=>{
     const qty = Math.max(num(r.qty), 0);
-    const dutyPct = rowDuty(r)/100;
+    const goodsToman = num(r.unitPrice)*qty*toToman(r.cur);
+    const goodsUsd   = toUsd(r.cur, num(r.unitPrice)*qty);
 
-    // ---- ارزش فاکتور ----
-    const fobAed     = num(r.unitPriceAed) * qty;
-    const freightAed = num(r.weightKg) * num(ship.freightPerKgAed);
-    const cifAed     = fobAed*(1 + num(ship.insurancePct)/100) + freightAed;
+    const share = sh.split === "weight"
+      ? (totWeight > 0 ? num(r.weightKg)/totWeight : 0)
+      : (totGoods  > 0 ? goodsToman/totGoods : 0);
 
-    // ---- پایه‌ای که گمرک روی آن حق ورودی می‌بندد ----
-    // گمرک لزوماً فاکتور شما را قبول نمی‌کند و ارزش‌گذاری خودش را دارد.
-    // اگر ارزش گمرکی هر واحد وارد شده باشد همان مبناست، وگرنه ارزش فاکتور
-    // با ضریب اعلامی بالا برده می‌شود.
-    const cvUnit      = num(r.customsValueAed);
-    const dutyBaseAed = cvUnit > 0 ? cvUnit*qty : cifAed*uplift;
+    const freightT = costToman.freight*share;
+    const customsT = costToman.customs*share;
+    const otherT   = costToman.other*share;
+    const taxT     = goodsToman*(taxMult - 1);
 
-    const goodsIrr     = num(r.unitPriceAed)*qty*rate;
-    const freightIrr   = freightAed*rate;
-    const insuranceIrr = goodsIrr*num(ship.insurancePct)/100;
-    const cifIrr       = goodsIrr + freightIrr + insuranceIrr;
-    const dutyBaseIrr  = dutyBaseAed*rate;
-    const dutyIrr      = dutyBaseIrr*dutyPct;
-    const importVatIrr = (dutyBaseIrr + dutyIrr)*vat;   // VAT هم روی ارزش گمرکی
-    const inlandIrr    = num(r.weightKg)*num(ship.inlandPerKgIrr);
+    const landed     = goodsToman*taxMult + freightT + customsT + otherT;
+    const landedUnit = qty>0 ? landed/qty : 0;
 
-    // سهم از هزینه‌های مقطوع محموله
-    const share = ship.allocBasis === "value"
-      ? (totFobAed > 0 ? (num(r.unitPriceAed)*qty)/totFobAed : 0)
-      : (totWeight  > 0 ? num(r.weightKg)/totWeight : 0);
-    const lumpIrr  = lump * share;
-    const extraIrr = num(r.extraPerUnitIrr) * qty;
+    const lossPct = Math.min(Math.max(num(r.lossPct),0),100);
+    const effQty  = qty*(1 - lossPct/100);
+    const sell    = num(r.sellPrice);
+    const sc      = num(r.sellCostPct)/100;
+    const netUnit = sell*(1-sc);
+    const revenue = netUnit*effQty;
+    const profit  = revenue - landed;
+    const profitUnit = qty>0 ? profit/qty : 0;
+    const marginPct  = revenue>0 ? profit/revenue*100 : 0;
 
-    const landedIrr  = cifIrr + dutyIrr + inlandIrr + lumpIrr + extraIrr
-                     + (vatIsCost ? importVatIrr : 0);
-    const landedUnit = qty>0 ? landedIrr/qty : 0;
-    const cashOutIrr = cifIrr + dutyIrr + inlandIrr + lumpIrr + extraIrr + importVatIrr;
-
-    // ---- ضایعات: پولش را داده‌اید ولی به قیمت کامل فروخته نمی‌شود ----
-    const lossPct = Math.min(Math.max(num(r.lossPct), 0), 100);
-    const effQty  = qty * (1 - lossPct/100);      // تعداد قابل فروش
-
-    const shelf        = num(r.sellPriceIrr);
-    const netRevUnit   = shelf/(1+vat);
-    const sc           = num(r.sellCostPct)/100;
-    const sellCostUnit = netRevUnit*sc;
-
-    const revenueNet     = netRevUnit * effQty;                    // درآمد خالص ردیف
-    const availableTotal = (netRevUnit - sellCostUnit) * effQty;   // پیش از بهای تمام‌شده
-    const profitTot      = availableTotal - landedIrr;
-    const profitUnit     = qty>0 ? profitTot/qty : 0;              // به ازای هر واحد خریداری‌شده
-    const marginPct      = revenueNet>0 ? profitTot/revenueNet*100 : 0;
-    const markupPct      = landedIrr>0 ? profitTot/landedIrr*100 : 0;
-
-    // نقطه سربه‌سر قیمت قفسه: درآمد خالصِ اقلام سالم باید کل بهای تمام‌شده را بپوشاند
-    const breakEvenShelf = (sc < 1 && effQty > 0)
-      ? landedIrr/((1-sc)*effQty)*(1+vat) : Infinity;
-
-    // قیمت لازم برای رسیدن به حاشیه سود هدف
+    const breakEvenPrice = (effQty>0 && sc<1) ? landed/((1-sc)*effQty) : Infinity;
     const m = num(st.targetMarginPct)/100;
-    const denom = 1 - sc - m;
-    const targetShelf = (denom > 0 && effQty > 0)
-      ? landedIrr/(effQty*denom)*(1+vat) : Infinity;
+    const den = 1 - sc - m;
+    const targetPrice = (effQty>0 && den>0) ? landed/(effQty*den) : Infinity;
 
-    // بهای تمام‌شده نسبت به نرخ درهم خطی است ⇒ A·نرخ + B
-    const aedLoad = cifAed + dutyBaseAed*dutyPct
-                  + (vatIsCost ? dutyBaseAed*(1+dutyPct)*vat : 0);
-    const A       = qty>0 ? aedLoad/qty : 0;            // ضریب ارزی هر واحد
-    const Btot    = inlandIrr + lumpIrr + extraIrr;     // اجزای ریالی ثابت
-    const B       = qty>0 ? Btot/qty : 0;
-    const availPerUnit = qty>0 ? availableTotal/qty : 0;
-    const breakEvenAed = A>0 ? (availPerUnit - B)/A : Infinity;
+    /* بهای تمام‌شده = A × نرخ دلار + B */
+    const A = goodsUsd*taxMult + extraUsd*share;
+    const B = extraLocal*share;
+    const availableTotal = netUnit*effQty;
+    const breakEvenUsd = A>0 ? (availableTotal - B)/A : Infinity;
 
-    const market = num(r.marketPriceIrr);
-    const vsMarketPct = market>0 ? (shelf-market)/market*100 : null;
-
-    const days = Math.max(num(r.daysHeld), 1);
-    const roi = landedIrr>0 ? profitTot/landedIrr*100 : 0;
-    const roiAnnual = roi*365/days;
-
-    return {
-      ...r, qty, share, dutyPct: dutyPct*100, lossPct, effQty,
-      dutyBaseAed, dutyBaseIrr, customsUplifted: cvUnit<=0 && uplift!==1,
-      goodsIrr, freightIrr, insuranceIrr, cifIrr, dutyIrr, inlandIrr, lumpIrr, extraIrr,
-      importVatIrr, landedIrr, landedUnit, cashOutIrr,
-      netRevUnit, sellCostUnit, revenueNet, availableTotal,
-      profitUnit, profitTot, marginPct, markupPct,
-      breakEvenShelf, targetShelf, breakEvenAed, A, B, available: availPerUnit,
-      vsMarketPct, days, roi, roiAnnual,
-      seg:{
-        goods:   qty>0 ? goodsIrr/qty : 0,
-        freight: qty>0 ? (freightIrr+insuranceIrr)/qty : 0,
-        duty:    qty>0 ? dutyIrr/qty : 0,
-        inland:  qty>0 ? (inlandIrr+lumpIrr)/qty : 0,
-        other:   qty>0 ? (extraIrr + (vatIsCost?importVatIrr:0))/qty : 0
-      }
-    };
+    return {...r, qty, share, effQty, lossPct,
+      goodsToman, freightT, customsT, otherT, taxT,
+      landed, landedUnit, netUnit, revenue, profit, profitUnit, marginPct,
+      breakEvenPrice, targetPrice, A, B, availableTotal, breakEvenUsd,
+      seg:{ goods:qty>0?goodsToman/qty:0, freight:qty>0?freightT/qty:0,
+            customs:qty>0?customsT/qty:0, other:qty>0?otherT/qty:0,
+            tax:qty>0?taxT/qty:0 }};
   });
 
   const t = {
-    qty:        sum(rows,"qty"),
-    effQty:     sum(rows,"effQty"),
-    weight:     totWeight,
-    fobAed:     totFobAed,
-    landedIrr:  sum(rows,"landedIrr"),
-    cashOutIrr: sum(rows,"cashOutIrr"),
-    importVat:  sum(rows,"importVatIrr"),
-    dutyIrr:    sum(rows,"dutyIrr"),
-    profitTot:  sum(rows,"profitTot"),
-    revenueNet: sum(rows,"revenueNet")
+    qty:sum(rows,"qty"), effQty:sum(rows,"effQty"), weight:totWeight,
+    goods:sum(rows,"goodsToman"), landed:sum(rows,"landed"),
+    revenue:sum(rows,"revenue"), profit:sum(rows,"profit"),
+    extraTotal, costToman
   };
   t.lostUnits = t.qty - t.effQty;
-  t.marginPct = t.revenueNet>0 ? t.profitTot/t.revenueNet*100 : 0;
-  t.roi       = t.landedIrr>0 ? t.profitTot/t.landedIrr*100 : 0;
-  t.avgDays   = t.landedIrr>0
-    ? rows.reduce((a,r)=>a+r.days*r.landedIrr,0)/t.landedIrr
-    : 0;
-  t.roiAnnual = t.avgDays>0 ? t.roi*365/t.avgDays : 0;
-
-  const sumA = rows.reduce((a,r)=>a+r.A*r.qty,0);
-  const sumB = rows.reduce((a,r)=>a+r.B*r.qty,0);
-  const sumAvail = sum(rows,"availableTotal");
-  t.breakEvenAed = sumA>0 ? (sumAvail-sumB)/sumA : Infinity;
-  t.sumA = sumA; t.sumB = sumB; t.sumAvail = sumAvail;
-
-  const pRate = num(st.purchaseAedIrr) || rate;
-  t.purchaseRate = pRate;
-  t.replacementDelta = (rate - pRate) * sumA;
-  t.bookProfit = t.profitTot + t.replacementDelta;
-
+  t.marginPct = t.revenue>0 ? t.profit/t.revenue*100 : 0;
+  t.roi = t.landed>0 ? t.profit/t.landed*100 : 0;
+  t.sumA = rows.reduce((a,r)=>a+r.A,0);
+  t.sumB = rows.reduce((a,r)=>a+r.B,0);
+  t.sumAvail = sum(rows,"availableTotal");
+  t.breakEvenUsd = t.sumA>0 ? (t.sumAvail-t.sumB)/t.sumA : Infinity;
+  const p = num(st.purchaseUsdToman) || num(st.fx.usdToman);
+  t.purchaseRate = p;
+  t.replacementDelta = (num(st.fx.usdToman) - p)*t.sumA;
+  t.bookProfit = t.profit + t.replacementDelta;
   return {rows, t};
 }
-
-// حاشیه سود کل سبد در یک نرخ درهم دلخواه (برای نمودار حساسیت)
-function portfolioMarginAt(model, aedRate){
-  const landed = model.t.sumA*aedRate + model.t.sumB;
+function portfolioMarginAt(model, usd){
+  const landed = model.t.sumA*usd + model.t.sumB;
   const profit = model.t.sumAvail - landed;
-  return model.t.revenueNet>0 ? profit/model.t.revenueNet*100 : 0;
+  return model.t.revenue>0 ? profit/model.t.revenue*100 : 0;
 }
 
-const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; };
-const sum = (arr,k) => arr.reduce((a,x)=>a+(Number.isFinite(x[k])?x[k]:0),0);
-
 /* =======================================================================
-   قالب‌بندی عدد
+   قالب‌بندی
    ======================================================================= */
-const FA = new Intl.NumberFormat("fa-IR",{maximumFractionDigits:0});
+const FA  = new Intl.NumberFormat("fa-IR",{maximumFractionDigits:0});
 const FA1 = new Intl.NumberFormat("fa-IR",{maximumFractionDigits:1});
 const FA2 = new Intl.NumberFormat("fa-IR",{maximumFractionDigits:2});
+const unitLabel = () => state.unit === "rial" ? "ریال" : "تومان";
+const unitMul   = () => state.unit === "rial" ? 10 : 1;
 
-function unitInfo(){
-  if(state.unit==="rial")   return {div:1,        label:"ریال",         short:"ر"};
-  if(state.unit==="mtoman") return {div:10000000, label:"میلیون تومان", short:"م.ت"};
-  return {div:10, label:"تومان", short:"ت"};
+function money(t){ return Number.isFinite(t) ? FA.format(Math.round(t*unitMul())) : "—"; }
+function moneyC(t){
+  if(!Number.isFinite(t)) return "—";
+  const v = t*unitMul(), a = Math.abs(v);
+  if(a >= 1e9) return FA1.format(v/1e9)+" میلیارد";
+  if(a >= 1e6) return FA1.format(v/1e6)+" میلیون";
+  return FA.format(Math.round(v));
 }
-// مبلغ ریالی → رشته در واحد انتخابی
-function money(irr, opts={}){
-  const u = unitInfo();
-  if(!Number.isFinite(irr)) return "—";
-  const v = irr/u.div;
-  const s = (state.unit==="mtoman") ? FA1.format(v) : FA.format(v);
-  return opts.unit ? s+" "+u.label : s;
-}
-function moneyCompact(irr){
-  const u = unitInfo();
-  if(!Number.isFinite(irr)) return "—";
-  const v = irr/u.div;
-  const a = Math.abs(v);
-  if(state.unit==="rial"   && a>=1e9) return FA1.format(v/1e9)+" میلیارد";
-  if(state.unit==="rial"   && a>=1e6) return FA1.format(v/1e6)+" میلیون";
-  if(state.unit==="toman"  && a>=1e9) return FA1.format(v/1e9)+" میلیارد";
-  if(state.unit==="toman"  && a>=1e6) return FA1.format(v/1e6)+" میلیون";
-  return FA.format(v);
-}
-const pct = v => Number.isFinite(v) ? FA1.format(v)+"٪" : "—";
-const rate = v => Number.isFinite(v) && v!==Infinity ? FA.format(Math.round(v)) : "—";
+const pct  = v => Number.isFinite(v) ? FA1.format(v)+"٪" : "—";
+const rateF = v => Number.isFinite(v) && v!==Infinity ? FA.format(Math.round(v)) : "—";
 
 /* =======================================================================
-   نرخ ارز — واکشی خودکار با زنجیره منابع و بازگشت به ورود دستی
+   دریافت نرخ‌ها
    =======================================================================
-   نکته: نرخ «بازار آزاد» ریال از سرویس‌های عمومی ارز به‌دست نمی‌آید.
-   منابع زیر به ترتیب امتحان می‌شوند؛ اگر مرورگر به‌خاطر CORS یا فیلترینگ
-   جلوی درخواست را بگیرد، به ورود دستی برمی‌گردیم و آخرین نرخ معتبر می‌ماند.
+   دو چیز جدا لازم است:
+   ۱) نرخ آزاد دلار به تومان — فقط از منابع ایرانی درمی‌آید.
+   ۲) نرخ سایر ارزها نسبت به دلار — از سرویس‌های جهانی، که پایدارترند.
+   هرکدام مستقل جواب بدهد همان اعمال می‌شود.
 */
-const SOURCES = [
-  {
-    name:"نوسان (navasan.tech)",
-    needsKey:true,
-    url: k => `https://api.navasan.tech/latest/?api_key=${encodeURIComponent(k)}&item=usd_sell,aed_sell`,
-    parse: j => {
-      const usd = num(j?.usd_sell?.value);
-      const aed = num(j?.aed_sell?.value);
-      if(!usd && !aed) return null;
-      // نوسان مقادیر را به تومان می‌دهد
-      return { usdIrr: usd? usd*10 : null, aedIrr: aed? aed*10 : null };
-    }
-  },
-  {
-    name:"TGJU",
-    url: () => "https://call4.tgju.org/ajax.json",
-    parse: j => {
-      const pick = k => {
-        const raw = j?.current?.[k]?.p ?? j?.[k]?.p;
-        if(raw==null) return null;
-        const n = num(String(raw).replace(/,/g,""));
-        return n>0 ? n : null;
-      };
-      const usd = pick("price_dollar_rl");   // ریال
-      const aed = pick("price_aed");         // ریال
-      if(!usd && !aed) return null;
-      return { usdIrr: usd, aedIrr: aed };
-    }
-  },
-  {
-    name:"آلان‌چند (alanchand)",
-    url: () => "https://api.alanchand.com/api/v1/currency",
-    parse: j => {
-      const arr = Array.isArray(j) ? j : (j?.data || []);
-      const find = s => arr.find(x => (x?.slug||x?.code||"").toLowerCase()===s);
-      const usd = num(find("usd")?.price);
-      const aed = num(find("aed")?.price);
-      if(!usd && !aed) return null;
-      // این منبع تومان می‌دهد
-      return { usdIrr: usd? usd*10 : null, aedIrr: aed? aed*10 : null };
-    }
-  }
+const IR_SOURCES = [
+  { name:"نوسان", key:true,
+    url:k=>`https://api.navasan.tech/latest/?api_key=${encodeURIComponent(k)}&item=usd_sell`,
+    parse:j=>num(j?.usd_sell?.value) || null },              // تومان می‌دهد
+  { name:"TGJU",
+    url:()=>"https://call4.tgju.org/ajax.json",
+    parse:j=>{
+      const raw = j?.current?.price_dollar_rl?.p ?? j?.price_dollar_rl?.p;
+      const n = raw ? num(String(raw).replace(/,/g,"")) : 0;
+      return n>0 ? n/10 : null;                              // ریال ⇒ تومان
+    }},
+  { name:"آلان‌چند",
+    url:()=>"https://api.alanchand.com/api/v1/currency",
+    parse:j=>{
+      const arr = Array.isArray(j)?j:(j?.data||[]);
+      const f = arr.find(x=>(x?.slug||x?.code||"").toLowerCase()==="usd");
+      return num(f?.price) || null;                          // تومان
+    }}
 ];
+const WORLD_SOURCES = [
+  { name:"Frankfurter",
+    url:()=>"https://api.frankfurter.app/latest?from=USD",
+    parse:j=>j?.rates || null },
+  { name:"ER-API",
+    url:()=>"https://open.er-api.com/v6/latest/USD",
+    parse:j=>j?.rates || null },
+  { name:"currency-api",
+    url:()=>"https://latest.currency-api.pages.dev/v1/currencies/usd.json",
+    parse:j=>{
+      const o = j?.usd; if(!o) return null;
+      const out = {}; Object.keys(o).forEach(k=>out[k.toUpperCase()] = o[k]);
+      return out;
+    }}
+];
+
+async function grab(src, key){
+  const ctl = new AbortController();
+  const timer = setTimeout(()=>ctl.abort(), 9000);
+  try{
+    const res = await fetch(src.url(key), {signal:ctl.signal, cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    return src.parse(await res.json());
+  } finally { clearTimeout(timer); }
+}
 
 async function fetchRates(){
   const btn = document.getElementById("fetchBtn");
   btn.disabled = true; btn.textContent = "در حال دریافت…";
-  const tried = [];
+  let gotUsd = null, gotWorld = 0, usdSrc = "", worldSrc = "";
 
-  for(const src of SOURCES){
-    if(src.needsKey && !state.navasanKey) continue;
+  for(const s of IR_SOURCES){
+    if(s.key && !state.navasanKey) continue;
     try{
-      const ctl = new AbortController();
-      const timer = setTimeout(()=>ctl.abort(), 9000);
-      const res = await fetch(src.url(state.navasanKey), {signal:ctl.signal, cache:"no-store"});
-      clearTimeout(timer);
-      if(!res.ok) throw new Error("HTTP "+res.status);
-      const out = src.parse(await res.json());
-      if(!out) throw new Error("قالب پاسخ ناشناخته");
-
-      // اگر فقط یکی از دو نرخ آمد، دیگری را از میخکوب درهم بساز
-      let {usdIrr, aedIrr} = out;
-      if(usdIrr && !aedIrr) aedIrr = usdIrr/num(state.fx.usdAed || USD_AED_PEG);
-      if(aedIrr && !usdIrr) usdIrr = aedIrr*num(state.fx.usdAed || USD_AED_PEG);
-
-      // بررسی معقول‌بودن: نرخ رسمی (حدود ۴۲٬۰۰۰ ریال) را به‌عنوان نرخ آزاد قبول نکن
-      if(usdIrr < 200000){
-        throw new Error("نرخ برگشتی شبیه نرخ رسمی است، نه بازار آزاد");
+      const v = await grab(s, state.navasanKey);
+      // نرخ رسمی (حدود ۴٬۲۰۰ تومان) نرخ بازار آزاد نیست
+      if(v && v > 20000){ gotUsd = v; usdSrc = s.name; break; }
+    }catch(e){}
+  }
+  for(const s of WORLD_SOURCES){
+    try{
+      const r = await grab(s);
+      if(r){
+        CUR.forEach(x=>{ if(x.c!=="USD" && num(r[x.c])>0){ state.fx.rates[x.c] = r[x.c]; gotWorld++; } });
+        worldSrc = s.name; break;
       }
-
-      state.fx.usdIrr = Math.round(usdIrr);
-      state.fx.aedIrr = Math.round(aedIrr);
-      state.fx.source = src.name;
-      state.fx.fetchedAt = Date.now();
-      state.fx.placeholder = false;
-      save(); syncInputs(); render();
-      btn.disabled = false; btn.textContent = "به‌روزرسانی خودکار نرخ";
-      return;
-    }catch(err){
-      tried.push(src.name+" ("+(err && err.message ? err.message : "خطا")+")");
-    }
+    }catch(e){}
   }
 
-  btn.disabled = false; btn.textContent = "به‌روزرسانی خودکار نرخ";
-  setFxChip("bad",
-    "دریافت خودکار ناموفق — نرخ را دستی وارد کنید",
-    "منابع امتحان‌شده: " + (tried.length ? tried.join(" · ") : "هیچ‌کدام (کلید API وارد نشده)"));
+  if(gotUsd) state.fx.usdToman = Math.round(gotUsd);
+  if(gotUsd || gotWorld){
+    state.fx.source = [gotUsd?usdSrc:null, gotWorld?worldSrc:null].filter(Boolean).join(" + ");
+    state.fx.fetchedAt = Date.now();
+    state.fx.placeholder = false;
+    save(); syncInputs(); render();
+  }
+
+  btn.disabled = false; btn.textContent = "دریافت خودکار نرخ‌ها";
+  if(!gotUsd && !gotWorld)
+    toast("دریافت خودکار جواب نداد. نرخ دلار را دستی وارد کنید — بقیه ارزها خودشان حساب می‌شوند.");
+  else if(!gotUsd)
+    toast("نرخ ارزهای خارجی به‌روز شد، ولی نرخ آزاد دلار نیامد. آن یکی را دستی وارد کنید.");
+  else if(!gotWorld)
+    toast("نرخ دلار به‌روز شد، ولی نرخ سایر ارزها نیامد.");
 }
 
-function setFxChip(kind, text, title){
-  const chip = document.getElementById("fxChip");
-  chip.querySelector(".dot").className = "dot "+kind;
-  document.getElementById("fxChipText").textContent = text;
-  chip.title = title || "";
-}
-function refreshFxChip(){
-  const f = state.fx;
+function refreshChip(){
+  const f = state.fx, chip = document.getElementById("fxChip");
+  const dot = chip.querySelector(".dot"), txt = document.getElementById("fxChipText");
   if(f.placeholder || !f.fetchedAt){
-    setFxChip("warn","نرخ نمونه — لطفاً نرخ روز را وارد یا به‌روزرسانی کنید");
+    dot.className = "dot warn"; txt.textContent = "نرخ نمونه — لطفاً به‌روز کنید"; chip.title = "";
     return;
   }
-  const ageH = (Date.now()-f.fetchedAt)/36e5;
-  const when = new Date(f.fetchedAt).toLocaleString("fa-IR");
-  if(ageH > 24) setFxChip("warn", `نرخ قدیمی (${FA.format(Math.round(ageH/24))} روز پیش) — ${f.source}`, when);
-  else          setFxChip("ok",   `نرخ به‌روز — ${f.source}`, when);
+  const hrs = (Date.now()-f.fetchedAt)/36e5;
+  chip.title = new Date(f.fetchedAt).toLocaleString("fa-IR");
+  if(hrs > 24){ dot.className = "dot warn"; txt.textContent = `${FA.format(Math.round(hrs/24))} روز پیش — ${f.source}`; }
+  else { dot.className = "dot ok"; txt.textContent = `به‌روز — ${f.source}`; }
 }
 
 /* =======================================================================
    ورودی‌ها
    ======================================================================= */
-const SHIP_FIELDS = ["freightPerKgAed","insurancePct","dutyPct","customsUpliftPct",
-                     "inlandPerKgIrr","clearanceLumpIrr","otherLumpIrr","allocBasis",
-                     "vatPct","vatRecoverable"];
+function curOptions(sel, list){
+  sel.textContent = "";
+  list.forEach(x=>{
+    const o = document.createElement("option");
+    o.value = x.c; o.textContent = x.fa; sel.appendChild(o);
+  });
+}
+
+function renderFxTable(){
+  const head = document.getElementById("fxHead"), body = document.getElementById("fxBody");
+  head.textContent = ""; body.textContent = "";
+  CUR.forEach(x=>{
+    const th = document.createElement("th"); th.className = "num"; th.textContent = x.fa;
+    head.appendChild(th);
+    const td = document.createElement("td"); td.className = "num";
+    if(x.c === "USD"){
+      td.textContent = FA.format(Math.round(state.fx.usdToman));
+      td.style.fontWeight = "650";
+    }else{
+      const inp = document.createElement("input");
+      inp.type = "number"; inp.step = "1"; inp.style.width = "100%";
+      inp.value = Math.round(toToman(x.c));
+      inp.setAttribute("aria-label", "قیمت "+x.fa+" به تومان");
+      inp.addEventListener("input", e=>{
+        const t = num(e.target.value);
+        if(t > 0) state.fx.rates[x.c] = num(state.fx.usdToman)/t;   // برعکس: از تومان به «واحد بر دلار»
+        save(); render();
+      });
+      td.appendChild(inp);
+    }
+    body.appendChild(td);
+  });
+}
+
+const SHIP_ITEMS = [["freight","freightAmt","freightCur"],
+                    ["customs","customsAmt","customsCur"],
+                    ["other","otherAmt","otherCur"]];
 
 function syncInputs(){
-  document.getElementById("usdIrr").value = state.fx.usdIrr;
-  document.getElementById("aedIrr").value = state.fx.aedIrr;
-  document.getElementById("usdAed").value = state.fx.usdAed;
-  document.getElementById("purchaseAedIrr").value = state.purchaseAedIrr;
-  document.getElementById("navasanKey").value = state.navasanKey || "";
+  document.getElementById("usdIrr").value = Math.round(state.fx.usdToman);
+  SHIP_ITEMS.forEach(([k,a,c])=>{
+    document.getElementById(a).value = state.ship[k].amount;
+    document.getElementById(c).value = state.ship[k].cur;
+  });
+  document.getElementById("split").value = state.ship.split;
+  document.getElementById("dutyPct").value = state.ship.dutyPct;
+  document.getElementById("vatPct").value = state.ship.vatPct;
   document.getElementById("targetMarginPct").value = state.targetMarginPct;
-  SHIP_FIELDS.forEach(k => { document.getElementById(k).value = state.ship[k]; });
+  renderFxTable();
+}
+
+/* ستون‌های جدول کالاها. adv=فقط در حالت پیشرفته */
+const COLS_IN = [
+  {k:"name",        t:"نام کالا",              type:"text",   cls:"name"},
+  {k:"cur",         t:"ارز خرید",              type:"cur"},
+  {k:"unitPrice",   t:"قیمت خرید<br>هر عدد",   type:"number", step:"0.01"},
+  {k:"qty",         t:"تعداد",                 type:"number", step:"1"},
+  {k:"weightKg",    t:"وزن کل<br>(کیلوگرم)",   type:"number", step:"0.1"},
+  {k:"sellPrice",   t:"قیمت فروش<br>هر عدد",   type:"number", step:"10000"},
+  {k:"sellCostPct", t:"هزینه فروش<br>(٪)",     type:"number", step:"0.5", adv:true},
+  {k:"lossPct",     t:"ضایعات<br>(٪)",         type:"number", step:"0.5", adv:true}
+];
+const COLS_OUT = [
+  {t:"کالا"},
+  {t:"بهای تمام‌شده<br>هر عدد", num:true},
+  {t:"قیمت فروش<br>هر عدد", num:true},
+  {t:"سود هر عدد", num:true},
+  {t:"سود ٪", num:true},
+  {t:"سود کل", num:true},
+  {t:"کمترین قیمت<br>بدون ضرر", num:true},
+  {t:"قیمت پیشنهادی", num:true},
+  {t:"دلار سربه‌سر", num:true, adv:true}
+];
+
+function buildHeads(){
+  const ih = document.getElementById("inHead"); ih.textContent = "";
+  COLS_IN.forEach(c=>{
+    const th = document.createElement("th");
+    if(c.type === "number") th.className = "num";
+    if(c.adv) th.classList.add("adv");
+    th.innerHTML = c.t;
+    if(FIELD_HELP[c.k]) th.appendChild(helpBtn(c.k));
+    ih.appendChild(th);
+  });
+  const del = document.createElement("th"); del.className = "noprint"; ih.appendChild(del);
+
+  const oh = document.getElementById("outHead"); oh.textContent = "";
+  COLS_OUT.forEach(c=>{
+    const th = document.createElement("th");
+    if(c.num) th.className = "num";
+    if(c.adv) th.classList.add("adv");
+    th.innerHTML = c.t;
+    oh.appendChild(th);
+  });
+}
+
+function renderInputs(){
+  const body = document.getElementById("inBody");
+  body.textContent = "";
+  state.rows.forEach((r,i)=>{
+    const tr = document.createElement("tr");
+    COLS_IN.forEach(c=>{
+      const td = document.createElement("td");
+      if(c.type === "number") td.className = "num";
+      if(c.adv) td.classList.add("adv");
+      let el;
+      if(c.type === "cur"){
+        el = document.createElement("select"); el.className = "cur";
+        curOptions(el, CUR); el.value = r.cur;
+      }else{
+        el = document.createElement("input");
+        el.type = c.type; if(c.step) el.step = c.step;
+        if(c.cls) el.className = c.cls;
+        el.value = r[c.k];
+      }
+      el.setAttribute("aria-label", c.t.replace(/<br>/g," "));
+      el.addEventListener("input", e=>{
+        r[c.k] = (c.type === "number") ? num(e.target.value) : e.target.value;
+        save(); render();
+      });
+      td.appendChild(el); tr.appendChild(td);
+    });
+    const td = document.createElement("td"); td.className = "noprint";
+    const b = document.createElement("button");
+    b.type="button"; b.className="danger"; b.textContent="حذف";
+    b.setAttribute("aria-label","حذف "+(r.name||"ردیف"));
+    b.addEventListener("click",()=>{ state.rows.splice(i,1); save(); renderInputs(); render(); });
+    td.appendChild(b); tr.appendChild(td);
+    body.appendChild(tr);
+  });
 }
 
 function bindInputs(){
-  const onFx = () => {
-    state.fx.usdIrr = num(document.getElementById("usdIrr").value);
-    state.fx.aedIrr = num(document.getElementById("aedIrr").value);
-    state.fx.usdAed = num(document.getElementById("usdAed").value) || USD_AED_PEG;
-    state.purchaseAedIrr = num(document.getElementById("purchaseAedIrr").value);
+  document.getElementById("usdIrr").addEventListener("input", e=>{
+    state.fx.usdToman = num(e.target.value);
     state.fx.placeholder = false;
-    state.fx.source = state.fx.source || "ورود دستی";
+    state.fx.source = state.fx.source || "دستی";
     state.fx.fetchedAt = state.fx.fetchedAt || Date.now();
-    save(); render();
-  };
-  ["usdIrr","aedIrr","usdAed","purchaseAedIrr"].forEach(id =>
-    document.getElementById(id).addEventListener("input", onFx));
-
-  // اگر دلار عوض شد و درهم دست‌نخورده بود، درهم را از میخکوب به‌روز کن
-  document.getElementById("usdIrr").addEventListener("change", () => {
-    const usd = num(document.getElementById("usdIrr").value);
-    const peg = num(document.getElementById("usdAed").value) || USD_AED_PEG;
-    const implied = Math.round(usd/peg);
-    const cur = num(document.getElementById("aedIrr").value);
-    if(Math.abs(cur - implied)/Math.max(implied,1) > 0.25){
-      document.getElementById("aedIrr").value = implied;
-      state.fx.aedIrr = implied;
-      save(); render();
-    }
+    save(); renderFxTable(); render();
   });
-
-  document.getElementById("navasanKey").addEventListener("input", e => {
-    state.navasanKey = e.target.value.trim(); save();
+  SHIP_ITEMS.forEach(([k,a,c])=>{
+    document.getElementById(a).addEventListener("input", e=>{
+      state.ship[k].amount = num(e.target.value); save(); render();
+    });
+    document.getElementById(c).addEventListener("change", e=>{
+      state.ship[k].cur = e.target.value; save(); render();
+    });
   });
-
-  SHIP_FIELDS.forEach(k => {
-    document.getElementById(k).addEventListener("input", e => {
-      state.ship[k] = (k==="allocBasis"||k==="vatRecoverable") ? e.target.value : num(e.target.value);
+  ["split","dutyPct","vatPct"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", e=>{
+      state.ship[id] = (id === "split") ? e.target.value : num(e.target.value);
       save(); render();
     });
   });
-
-  document.getElementById("targetMarginPct").addEventListener("input", e => {
-    state.targetMarginPct = num(e.target.value);
-    save(); render();
+  document.getElementById("targetMarginPct").addEventListener("input", e=>{
+    state.targetMarginPct = num(e.target.value); save(); render();
   });
-
-  // قیمت فروش هر کالا را روی قیمتی می‌گذارد که حاشیه هدف را می‌دهد
-  document.getElementById("applyTarget").addEventListener("click", () => {
+  document.getElementById("applyTarget").addEventListener("click", ()=>{
     const m = compute(state);
-    const bad = m.rows.filter(r => !Number.isFinite(r.targetShelf)).length;
-    if(bad === m.rows.length){
-      toast("با این حاشیه هدف و هزینه فروش، هیچ قیمتی ممکن نیست. حاشیه هدف را کم کنید.");
-      return;
-    }
-    let n = 0;
-    m.rows.forEach((r,i) => {
-      if(Number.isFinite(r.targetShelf) && r.targetShelf > 0){
-        state.rows[i].sellPriceIrr = Math.round(r.targetShelf/1000)*1000;
-        n++;
-      }
+    let n = 0, bad = 0;
+    m.rows.forEach((r,i)=>{
+      if(Number.isFinite(r.targetPrice) && r.targetPrice > 0){
+        state.rows[i].sellPrice = Math.round(r.targetPrice/1000)*1000; n++;
+      } else bad++;
     });
+    if(!n){ toast("این درصد سود شدنی نیست. عدد کمتری بگذارید."); return; }
     save(); renderInputs(); render();
-    toast(n + " قیمت فروش روی حاشیه هدف " + pct(num(state.targetMarginPct)) + " تنظیم شد."
-        + (bad ? "  (" + bad + " کالا شدنی نبود.)" : ""));
+    toast(n+" قیمت روی سود "+pct(num(state.targetMarginPct))+" تنظیم شد."+(bad?"  ("+bad+" کالا نشد.)":""));
   });
-
-  document.getElementById("fetchBtn").addEventListener("click", fetchRates);
-  document.getElementById("addRow").addEventListener("click", () => {
-    state.rows.push(row("کالای جدید", 0, 0, 0, 0, 0, 0, 12, 60, "", 0, 0));
+  document.getElementById("addRow").addEventListener("click", ()=>{
+    state.rows.push(row("کالای جدید","USD",0,0,0,0));
     save(); renderInputs(); render();
   });
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    if(!confirm("همه داده‌ها به مقادیر نمونه برمی‌گردد. مطمئن هستید؟")) return;
+  document.getElementById("resetBtn").addEventListener("click", ()=>{
+    if(!confirm("همه داده‌ها به مقادیر نمونه برمی‌گردد. مطمئنید؟")) return;
     state = sampleState(); uid = Math.max(0,...state.rows.map(r=>r.id))+1;
     save(); syncInputs(); renderInputs(); render();
   });
+  document.getElementById("fetchBtn").addEventListener("click", fetchRates);
 
-  document.querySelectorAll("[data-unit]").forEach(b => {
-    b.addEventListener("click", () => {
-      state.unit = b.dataset.unit;
-      document.querySelectorAll("[data-unit]").forEach(x =>
-        x.setAttribute("aria-pressed", String(x===b)));
+  document.querySelectorAll("[data-mode]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      state.mode = b.dataset.mode;
+      document.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed", String(x===b)));
+      document.body.classList.toggle("advanced", state.mode === "advanced");
       save(); render();
     });
   });
-
-  document.getElementById("themeBtn").addEventListener("click", () => {
-    const cur = document.documentElement.getAttribute("data-theme");
-    const next = cur==="dark" ? "light" : cur==="light" ? "" : "dark";
-    if(next) document.documentElement.setAttribute("data-theme", next);
+  document.querySelectorAll("[data-unit]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      state.unit = b.dataset.unit;
+      document.querySelectorAll("[data-unit]").forEach(x=>x.setAttribute("aria-pressed", String(x===b)));
+      save(); render();
+    });
+  });
+  document.getElementById("themeBtn").addEventListener("click", ()=>{
+    const c = document.documentElement.getAttribute("data-theme");
+    const n = c==="dark" ? "light" : c==="light" ? "" : "dark";
+    if(n) document.documentElement.setAttribute("data-theme", n);
     else document.documentElement.removeAttribute("data-theme");
     render();
   });
   document.getElementById("printBtn").addEventListener("click", ()=>{ enterPrint(); window.print(); });
   document.getElementById("csvBtn").addEventListener("click", exportCsv);
-}
-
-const ROW_FIELDS = [
-  {k:"name",             type:"text",   cls:"name"},
-  {k:"unitPriceAed",     type:"number", step:"0.01"},
-  {k:"qty",              type:"number", step:"1"},
-  {k:"weightKg",         type:"number", step:"0.1"},
-  {k:"customsValueAed",  type:"number", step:"0.01", blankZero:true},
-  {k:"dutyPctRow",       type:"number", step:"1",    blank:true},
-  {k:"lossPct",          type:"number", step:"0.5"},
-  {k:"extraPerUnitIrr",  type:"number", step:"1000"},
-  {k:"marketPriceIrr",   type:"number", step:"10000"},
-  {k:"sellPriceIrr",     type:"number", step:"10000"},
-  {k:"sellCostPct",      type:"number", step:"0.5"},
-  {k:"daysHeld",         type:"number", step:"1"}
-];
-
-function renderInputs(){
-  const body = document.getElementById("inBody");
-  body.textContent = "";
-  state.rows.forEach((r,i) => {
-    const tr = document.createElement("tr");
-    ROW_FIELDS.forEach(f => {
-      const td = document.createElement("td");
-      if(f.type==="number") td.className = "num";
-      const inp = document.createElement("input");
-      inp.type = f.type;
-      if(f.step) inp.step = f.step;
-      if(f.cls) inp.className = f.cls;
-      inp.value = (f.blankZero && !num(r[f.k])) ? "" : r[f.k];
-      inp.setAttribute("aria-label", f.k);
-      if(f.blank) inp.placeholder = "کلی";
-      if(f.blankZero) inp.placeholder = "فاکتور";
-      inp.addEventListener("input", e => {
-        const v = e.target.value;
-        if(f.type !== "number")      r[f.k] = v;
-        else if(f.blank && v === "") r[f.k] = "";      // یعنی «از تعرفه کلی استفاده کن»
-        else                         r[f.k] = num(v);
-        save(); render();
-      });
-      td.appendChild(inp);
-      tr.appendChild(td);
-    });
-    const td = document.createElement("td");
-    td.className = "noprint";
-    const del = document.createElement("button");
-    del.type="button"; del.className="danger"; del.textContent="حذف";
-    del.setAttribute("aria-label","حذف "+(r.name||"ردیف"));
-    del.addEventListener("click", () => {
-      state.rows.splice(i,1); save(); renderInputs(); render();
-    });
-    td.appendChild(del); tr.appendChild(td);
-    body.appendChild(tr);
+  document.getElementById("helpBtnTop").addEventListener("click", ()=>{
+    const d = document.getElementById("helpRefWrap");
+    d.open = true; d.scrollIntoView({behavior:"smooth", block:"start"});
   });
 }
 
@@ -1190,964 +936,576 @@ function renderInputs(){
    ======================================================================= */
 let model = null;
 
-// خط بالای برگه چاپی: بدون این، معلوم نیست برگه با چه نرخی و چه روزی درآمده
-function renderPrintMeta(){
-  const box = document.getElementById("printMeta");
-  if(!box) return;
-  const f = state.fx;
-  const src = f.placeholder ? "نرخ نمونه — تأیید نشده" : (f.source || "ورود دستی");
-  const when = f.fetchedAt ? new Date(f.fetchedAt).toLocaleString("fa-IR") : "—";
-  const n = state.rows.filter(r => (r.name||"").trim()).length;
-  box.textContent =
-    "تاریخ چاپ: " + new Date().toLocaleString("fa-IR") +
-    "   ·   نرخ درهم: " + rate(num(f.aedIrr)) + " ریال (" + src + "، " + when + ")" +
-    "   ·   دلار: " + rate(num(f.usdIrr)) + " ریال" +
-    "   ·   " + FA.format(n) + " قلم کالا" +
-    "   ·   ارقام به " + unitInfo().label;
-}
-
 function render(){
   model = compute(state);
-  refreshFxChip();
+  refreshChip();
   renderPrintMeta();
   renderTiles();
-  renderOutTable();
-  renderFxRisk();
-  drawStack(); drawMargin(); drawSensitivity(); drawBreakEven();
+  renderOut();
+  renderRisk();
+  drawStack(); drawMargin(); drawSens();
+}
+
+function renderPrintMeta(){
+  const box = document.getElementById("printMeta"); if(!box) return;
+  const f = state.fx;
+  const src = f.placeholder ? "نرخ نمونه — تأیید نشده" : (f.source || "دستی");
+  const when = f.fetchedAt ? new Date(f.fetchedAt).toLocaleString("fa-IR") : "—";
+  const n = state.rows.filter(r=>(r.name||"").trim()).length;
+  box.textContent = "تاریخ: " + new Date().toLocaleString("fa-IR")
+    + "   ·   دلار: " + FA.format(Math.round(f.usdToman)) + " تومان (" + src + "، " + when + ")"
+    + "   ·   " + FA.format(n) + " کالا   ·   ارقام به " + unitLabel();
 }
 
 function renderTiles(){
-  const t = model.t, u = unitInfo();
-  const tiles = [
-    {k:"سرمایه لازم (پرداختی کل)", v:moneyCompact(t.cashOutIrr), u:u.label+" · شامل ارزش افزوده گمرک"},
-    {k:"ارزش خرید از دبی",         v:FA.format(Math.round(t.fobAed)), u:"درهم · "+FA.format(Math.round(t.weight))+" کیلوگرم"},
-    {k:"بهای تمام‌شده کالا",        v:moneyCompact(t.landedIrr), u:u.label+" · بدون ارزش افزوده"},
-    {k:"سود ناخالص پیش‌بینی‌شده",   v:moneyCompact(t.profitTot),
-     u: t.lostUnits>0.5
-        ? u.label+" · پس از "+FA.format(Math.round(t.lostUnits))+" عدد ضایعات"
-        : u.label,
-     cls:t.profitTot>=0?"pos":"neg"},
-    {k:"حاشیه سود کل",             v:pct(t.marginPct), u:"از فروش خالص", cls:t.marginPct>=0?"pos":"neg"},
-    {k:"بازده سالانه‌شده سرمایه",   v:pct(t.roiAnnual), u:"میانگین "+FA.format(Math.round(t.avgDays))+" روز درگیری", cls:t.roiAnnual>=0?"pos":"neg"},
-    {k:"نرخ درهم سربه‌سر",          v:rate(t.breakEvenAed), u:"ریال · نرخ فعلی "+rate(num(state.fx.aedIrr))}
-  ];
-  const box = document.getElementById("tiles");
+  const t = model.t, box = document.getElementById("tiles");
   box.textContent = "";
-  tiles.forEach(d => {
-    const el = document.createElement("div"); el.className="tile";
+  const list = [
+    {k:"پولی که باید بدهید", v:moneyC(t.landed), u:unitLabel()+" · کل محموله تا انبار شما", hero:true},
+    {k:"ارزش خرید",  v:moneyC(t.goods), u:unitLabel()+" · فقط خودِ جنس"},
+    {k:"هزینه آوردن", v:moneyC(t.extraTotal), u:unitLabel()+" · حمل + ترخیص + سایر"},
+    {k:"سود پیش‌بینی‌شده", v:moneyC(t.profit), u:unitLabel(), cls:t.profit>=0?"pos":"neg"},
+    {k:"درصد سود", v:pct(t.marginPct), u:"از فروش", cls:t.marginPct>=0?"pos":"neg"}
+  ];
+  if(state.mode === "advanced"){
+    list.push({k:"دلار سربه‌سر", v:rateF(t.breakEvenUsd),
+               u:"تومان · دلار امروز "+FA.format(Math.round(state.fx.usdToman))});
+  }
+  list.forEach(d=>{
+    const el = document.createElement("div"); el.className = "tile"+(d.hero?" hero":"");
     const k = document.createElement("div"); k.className="k"; k.textContent=d.k;
     const v = document.createElement("div"); v.className="v"+(d.cls?" "+d.cls:""); v.textContent=d.v;
-    const s = document.createElement("div"); s.className="u"; s.textContent=d.u;
-    el.append(k,v,s); box.appendChild(el);
+    const u = document.createElement("div"); u.className="u"; u.textContent=d.u;
+    el.append(k,v,u); box.appendChild(el);
   });
 }
 
-function renderOutTable(){
-  const body = document.getElementById("outBody");
-  const foot = document.getElementById("outFoot");
-  body.textContent=""; foot.textContent="";
-
-  model.rows.forEach(r => {
+function renderOut(){
+  const body = document.getElementById("outBody"), foot = document.getElementById("outFoot");
+  body.textContent = ""; foot.textContent = "";
+  model.rows.forEach(r=>{
     const cells = [
-      {t:r.name || "—", cls:""},
-      {t:money(r.landedUnit)},
-      {t:money(r.netRevUnit)},
-      {t:money(r.profitUnit), color:r.profitUnit>=0?"good":"bad"},
-      {t:pct(r.marginPct),    color:r.marginPct>=0?"good":"bad"},
-      {t:moneyCompact(r.profitTot), color:r.profitTot>=0?"good":"bad"},
-      {t:money(r.breakEvenShelf)},
-      {t:Number.isFinite(r.targetShelf) ? money(r.targetShelf) : "ناممکن",
-       color: Number.isFinite(r.targetShelf) ? null : "bad"},
-      {t:rate(r.breakEvenAed), color: r.breakEvenAed>num(state.fx.aedIrr)?"good":"bad"},
-      {t:pct(r.roiAnnual),    color:r.roiAnnual>=0?"good":"bad"},
-      {t:r.vsMarketPct==null ? "—" : (r.vsMarketPct>0?"+":"")+pct(r.vsMarketPct)}
+      {v:r.name||"—"},
+      {v:money(r.landedUnit)},
+      {v:money(r.sellPrice)},
+      {v:money(r.profitUnit), c:r.profitUnit>=0?"good":"bad"},
+      {v:pct(r.marginPct),    c:r.marginPct>=0?"good":"bad"},
+      {v:moneyC(r.profit),    c:r.profit>=0?"good":"bad"},
+      {v:money(r.breakEvenPrice)},
+      {v:Number.isFinite(r.targetPrice)?money(r.targetPrice):"نمی‌شود"},
+      {v:rateF(r.breakEvenUsd), adv:true,
+       c:r.breakEvenUsd>num(state.fx.usdToman)?"good":"bad"}
     ];
     const tr = document.createElement("tr");
-    cells.forEach((c,i) => {
+    cells.forEach((c,i)=>{
       const td = document.createElement("td");
-      if(i>0) td.className="num";
-      td.textContent = c.t;
-      if(c.color==="good") td.style.color="var(--good-text)";
-      if(c.color==="bad")  td.style.color="var(--critical)";
+      if(i>0) td.className = "num";
+      if(c.adv) td.classList.add("adv");
+      td.textContent = c.v;
+      if(c.c==="good") td.style.color = "var(--good-text)";
+      if(c.c==="bad")  td.style.color = "var(--critical)";
       tr.appendChild(td);
     });
     body.appendChild(tr);
   });
-
   const t = model.t;
-  const ftr = document.createElement("tr");
-  [ "جمع",
-    "—", "—",
-    "—",
-    pct(t.marginPct),
-    moneyCompact(t.profitTot),
-    "—",
-    "—",
-    rate(t.breakEvenAed),
-    pct(t.roiAnnual),
-    "—"
-  ].forEach((txt,i)=>{
-    const td=document.createElement("td");
-    if(i>0) td.className="num";
-    td.textContent=txt; ftr.appendChild(td);
+  const vals = ["جمع","—","—","—",pct(t.marginPct),moneyC(t.profit),"—","—",
+                {v:rateF(t.breakEvenUsd), adv:true}];
+  const tr = document.createElement("tr");
+  vals.forEach((x,i)=>{
+    const td = document.createElement("td");
+    if(i>0) td.className = "num";
+    if(x && x.adv){ td.classList.add("adv"); td.textContent = x.v; }
+    else td.textContent = x;
+    tr.appendChild(td);
   });
-  foot.appendChild(ftr);
+  foot.appendChild(tr);
 }
 
-function renderFxRisk(){
-  const t = model.t;
-  const el = document.getElementById("fxRiskNote");
-  const pRate = t.purchaseRate, cRate = num(state.fx.aedIrr);
+function renderRisk(){
+  const el = document.getElementById("riskNote"), t = model.t;
   el.textContent = "";
-  const mk = (s, bold) => {
-    const n = document.createElement(bold?"strong":"span"); n.textContent = s; return n;
-  };
-
-  const U = unitInfo().label;
-
-  if(Math.abs(cRate-pRate)/Math.max(pRate,1) < 0.005){
-    el.append(mk("ریسک ارزی: ", true),
-      mk("نرخ روز خرید با نرخ امروز یکی است، پس سود دفتری و سود واقعی برابرند. "),
-      mk("اگر تا فروش کامل «"+FA.format(Math.round(t.avgDays))+" روز» فاصله دارید، این عدد را دوباره چک کنید — تفاوت نرخ در همین فاصله سود را جابه‌جا می‌کند."));
+  const add = (s,b)=>{ const n=document.createElement(b?"b":"span"); n.textContent=s; el.appendChild(n); };
+  if(state.mode !== "advanced"){
+    add("یادتان باشد: ", true);
+    add("این اعداد با نرخ دلار امروز (" + FA.format(Math.round(state.fx.usdToman))
+      + " تومان) حساب شده‌اند. اگر دلار گران شود، خرید بعدی همین جنس گران‌تر تمام می‌شود — "
+      + "پس همه سود امروز، سود واقعی نیست.");
     return;
   }
-
-  el.append(mk("ریسک ارزی: ", true));
-  el.append(mk("این محموله با درهم "+rate(pRate)+" ریال خریداری شده و نرخ امروز "+rate(cRate)+" ریال است. "));
-  el.append(mk("همه اعداد بالا با نرخ امروز حساب شده‌اند، یعنی سود جایگزینی. "));
-
-  if(cRate > pRate){
-    el.append(
-      mk("اگر همین محموله را با نرخ روز خرید ارزش‌گذاری کنید، سود دفتری "+moneyCompact(t.bookProfit)+" "+U+" می‌شود؛ "),
-      mk("اما جایگزینی آن با نرخ امروز "+moneyCompact(Math.abs(t.replacementDelta))+" "+U+" گران‌تر تمام می‌شود", true),
-      mk(" — پس سود واقعیِ قابل‌سرمایه‌گذاری‌مجدد همان "+moneyCompact(t.profitTot)+" "+U+" است، نه عدد دفتری."));
-  }else{
-    el.append(
-      mk("چون نرخ پایین آمده، جایگزینی محموله ارزان‌تر تمام می‌شود: سود دفتری "+moneyCompact(t.bookProfit)+" "+U+" است، "),
-      mk("اما سود واقعی با نرخ امروز "+moneyCompact(t.profitTot)+" "+U, true),
-      mk(" — یعنی بیشتر از چیزی که دفترها نشان می‌دهند."));
+  const p = t.purchaseRate, c = num(state.fx.usdToman);
+  add("ریسک ارزی: ", true);
+  if(Math.abs(c-p)/Math.max(p,1) < 0.005){
+    add("نرخ روز خرید با نرخ امروز یکی است، پس سود دفتری و سود واقعی برابرند.");
+    return;
   }
+  add("این محموله با دلار " + FA.format(Math.round(p)) + " تومان خریده شده و امروز دلار "
+    + FA.format(Math.round(c)) + " تومان است. سود دفتری " + moneyC(t.bookProfit) + " " + unitLabel()
+    + " است، ولی چون خرید دوباره همین محموله با نرخ امروز ");
+  add(moneyC(Math.abs(t.replacementDelta)) + " " + unitLabel() + (c>p?" گران‌تر":" ارزان‌تر") + " تمام می‌شود", true);
+  add("، سود واقعی " + moneyC(t.profit) + " " + unitLabel() + " است.");
 }
 
 /* =======================================================================
-   نمودارها — SVG دستی، بدون کتابخانه بیرونی
+   نمودارها
    ======================================================================= */
 const tip = document.getElementById("tip");
-function showTip(html, ev){
-  tip.textContent = "";
-  tip.appendChild(html);
-  tip.style.opacity = "1";
-  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
-  let x = ev.clientX + pad, y = ev.clientY + pad;
-  if(x + w > innerWidth - 8)  x = ev.clientX - w - pad;
-  if(y + h > innerHeight - 8) y = ev.clientY - h - pad;
-  tip.style.left = Math.max(8,x)+"px";
-  tip.style.top  = Math.max(8,y)+"px";
+function showTip(frag, ev){
+  tip.textContent = ""; tip.appendChild(frag); tip.style.opacity = "1";
+  const pad=14, w=tip.offsetWidth, h=tip.offsetHeight;
+  let x=ev.clientX+pad, y=ev.clientY+pad;
+  if(x+w > innerWidth-8)  x = ev.clientX-w-pad;
+  if(y+h > innerHeight-8) y = ev.clientY-h-pad;
+  tip.style.left = Math.max(8,x)+"px"; tip.style.top = Math.max(8,y)+"px";
 }
-function hideTip(){ tip.style.opacity = "0"; }
+const hideTip = () => tip.style.opacity = "0";
 document.addEventListener("scroll", hideTip, true);
 
 const NS = "http://www.w3.org/2000/svg";
-function el(name, attrs={}, parent){
-  const n = document.createElementNS(NS, name);
-  for(const k in attrs) n.setAttribute(k, attrs[k]);
-  if(parent) parent.appendChild(n);
-  return n;
-}
-function clear(svg){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
-// هنگام چاپ، عرض واقعیِ روی صفحه معیار نیست — عرض کاغذ A4 معیار است،
-// وگرنه نمودارِ پهنِ صفحه روی کاغذ کوچک و کج‌وکوله می‌افتد.
+function el(n,a,p){ const e=document.createElementNS(NS,n); for(const k in a) e.setAttribute(k,a[k]); if(p)p.appendChild(e); return e; }
+const clear = s => { while(s.firstChild) s.removeChild(s.firstChild); };
 let PRINT_W = 0;
-function svgW(svg){
-  if(PRINT_W) return PRINT_W;
-  return Math.max(340, svg.getBoundingClientRect().width || 460);
-}
-
+const svgW = s => PRINT_W || Math.max(340, s.getBoundingClientRect().width || 460);
+const cssVar = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 function tipBox(title, lines){
-  const f = document.createDocumentFragment();
-  const h = document.createElement("div"); h.className="th"; h.textContent=title; f.appendChild(h);
-  lines.forEach(([label,val,color])=>{
-    const r = document.createElement("div"); r.className="tr";
-    const l = document.createElement("span"); l.className="lb";
-    if(color){
-      const sw=document.createElement("span");
-      sw.style.cssText="width:9px;height:9px;border-radius:2px;display:inline-block;background:"+color;
-      l.appendChild(sw);
-    }
-    l.appendChild(document.createTextNode(label));
-    const v = document.createElement("span"); v.className="vl"; v.textContent=val;
-    r.append(l,v); f.appendChild(r);
+  const f=document.createDocumentFragment();
+  const h=document.createElement("div"); h.className="th"; h.textContent=title; f.appendChild(h);
+  lines.forEach(([l,v,c])=>{
+    const r=document.createElement("div"); r.className="tr";
+    const a=document.createElement("span"); a.className="lb";
+    if(c){ const sw=document.createElement("span");
+      sw.style.cssText="width:9px;height:9px;border-radius:2px;display:inline-block;background:"+c; a.appendChild(sw); }
+    a.appendChild(document.createTextNode(l));
+    const b=document.createElement("span"); b.className="vl"; b.textContent=v;
+    r.append(a,b); f.appendChild(r);
   });
   return f;
 }
-
-// برچسب کوتاه محور
-function shortName(s, n=14){
-  s = (s||"—").trim();
-  return s.length>n ? s.slice(0,n-1)+"…" : s;
-}
+const shortName = (s,n=13) => { s=(s||"—").trim(); return s.length>n ? s.slice(0,n-1)+"…" : s; };
 function niceMax(v){
   if(v<=0) return 1;
-  const p = Math.pow(10, Math.floor(Math.log10(v)));
-  const r = v/p;
-  const step = r<=1?1 : r<=1.5?1.5 : r<=2?2 : r<=2.5?2.5 : r<=3?3
-             : r<=4?4 : r<=5?5 : r<=8?8 : 10;
-  return step*p;
+  const p=Math.pow(10,Math.floor(Math.log10(v))), r=v/p;
+  const st = r<=1?1 : r<=1.5?1.5 : r<=2?2 : r<=2.5?2.5 : r<=3?3 : r<=4?4 : r<=5?5 : r<=8?8 : 10;
+  return st*p;
 }
-
-/* ---------- ۱) ستونی انباشته: ساختار هزینه ---------- */
-const SEGS = [
-  {k:"goods",   label:"کالا (خرید از دبی)",           varname:"--s1"},
-  {k:"freight", label:"کرایه دریایی + بیمه",           varname:"--s2"},
-  {k:"duty",    label:"حقوق ورودی گمرک",               varname:"--s3"},
-  {k:"inland",  label:"حمل داخلی + ترخیص",             varname:"--s4"},
-  {k:"other",   label:"هزینه‌های جانبی",               varname:"--s5"}
-];
-function cssVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-
-function drawStack(){
-  const svg = document.getElementById("chStack");
-  clear(svg);
-  const rows = model.rows;
-  const colors = SEGS.map(s=>cssVar(s.varname));
-
-  // legend
-  const lg = document.getElementById("lgStack"); lg.textContent="";
-  SEGS.forEach((s,i)=>{
-    const it=document.createElement("span"); it.className="item";
-    const sw=document.createElement("span"); sw.className="sw"; sw.style.background=colors[i];
-    it.append(sw, document.createTextNode(s.label)); lg.appendChild(it);
-  });
-
-  if(!rows.length){ svg.setAttribute("height",60); return; }
-
-  const W = svgW(svg), H = 300;
-  // حاشیه چپ باید جای برچسب‌هایی مثل «۲٫۳ میلیون» را بدهد
-  const m = {t:26, r:12, b:56, l:86};
-  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
-  svg.setAttribute("height",H);
-
-  const maxV = niceMax(Math.max(...rows.map(r=>r.landedUnit), 1));
-  const iw = W-m.l-m.r, ih = H-m.t-m.b;
-  const bw = Math.min(58, iw/rows.length*0.62);
-  const x = i => m.l + iw*(i+0.5)/rows.length;
-  const y = v => m.t + ih*(1 - v/maxV);
-
-  // grid + محور مقدار
-  for(let i=0;i<=4;i++){
-    const v = maxV*i/4, yy = y(v);
-    el("line",{x1:m.l,x2:W-m.r,y1:yy,y2:yy,class:i?"gridline":"baseline"},svg);
-    const tx = el("text",{x:m.l-8,y:yy+3.5,"text-anchor":"end",class:"tick"},svg);
-    tx.textContent = moneyCompact(v);
-  }
-  const ul = el("text",{x:m.l-8,y:m.t-13,"text-anchor":"end",class:"tick"},svg);
-  ul.textContent = unitInfo().label;
-
-  rows.forEach((r,i)=>{
-    let acc = 0;
-    const cx = x(i)-bw/2;
-    SEGS.forEach((s,si)=>{
-      const v = r.seg[s.k];
-      if(v<=0) return;
-      const y0 = y(acc+v), y1 = y(acc);
-      const h = Math.max(0, y1-y0-2);   // فاصله ۲ پیکسلی بین بخش‌ها
-      if(h<=0){ acc+=v; return; }
-      const rect = el("rect",{x:cx,y:y0,width:bw,height:h,fill:colors[si],rx:2},svg);
-      rect.style.cursor="pointer";
-      rect.addEventListener("mousemove", ev => showTip(tipBox(r.name||"—", [
-        [s.label, money(v,{unit:true}), colors[si]],
-        ["سهم از بهای تمام‌شده", pct(r.landedUnit>0? v/r.landedUnit*100 : 0)],
-        ["بهای تمام‌شده هر واحد", money(r.landedUnit,{unit:true})]
-      ]), ev));
-      rect.addEventListener("mouseleave", hideTip);
-      acc += v;
-    });
-    // مجموع بالای ستون
-    const lab = el("text",{x:x(i),y:y(r.landedUnit)-6,"text-anchor":"middle",class:"dlabel"},svg);
-    lab.textContent = moneyCompact(r.landedUnit);
-    // نام کالا
-    const nm = el("text",{x:x(i),y:H-m.b+16,"text-anchor":"middle",class:"tick"},svg);
-    nm.textContent = shortName(r.name,12);
-  });
-
-  renderMiniTable("tblStack",
-    ["محصول",...SEGS.map(s=>s.label),"جمع هر واحد"],
-    rows.map(r=>[r.name,...SEGS.map(s=>money(r.seg[s.k])),money(r.landedUnit)]));
-}
-
-/* ---------- ۲) حاشیه سود (واگرا حول صفر) ---------- */
-function drawMargin(){
-  const svg = document.getElementById("chMargin");
-  clear(svg);
-  const rows = model.rows;
-  if(!rows.length){ svg.setAttribute("height",60); return; }
-
-  const W = svgW(svg), rowH = 30, H = rows.length*rowH + 52;
-  const m = {t:12, r:56, b:28, l:110};
-  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
-  svg.setAttribute("height",H);
-
-  const vals = rows.map(r=>r.marginPct);
-  const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
-  const span = Math.max(niceMax(Math.max(Math.abs(lo),Math.abs(hi))), 5);
-  const iw = W-m.l-m.r;
-  const x = v => m.l + iw*(v+span)/(2*span);
-
-  const pos = cssVar("--pos"), neg = cssVar("--neg");
-
-  // خطوط راهنما
-  [-span,-span/2,0,span/2,span].forEach(v=>{
-    const xx=x(v);
-    el("line",{x1:xx,x2:xx,y1:m.t,y2:H-m.b,class:v===0?"baseline":"gridline"},svg);
-    const t=el("text",{x:xx,y:H-m.b+15,"text-anchor":"middle",class:"tick"},svg);
-    t.textContent = FA.format(Math.round(v))+"٪";
-  });
-
-  rows.forEach((r,i)=>{
-    const yy = m.t + i*rowH + 5;
-    const h = rowH-13;
-    const v = r.marginPct;
-    const x0 = Math.min(x(0), x(v)), w = Math.abs(x(v)-x(0));
-    const c = v>=0 ? pos : neg;
-    const rect = el("rect",{x:x0,y:yy,width:Math.max(w,1.5),height:h,fill:c,rx:2},svg);
-    rect.style.cursor="pointer";
-    rect.addEventListener("mousemove", ev => showTip(tipBox(r.name||"—",[
-      ["حاشیه سود", pct(v), c],
-      ["سود هر واحد", money(r.profitUnit,{unit:true})],
-      ["بهای تمام‌شده", money(r.landedUnit,{unit:true})],
-      ["فروش خالص", money(r.netRevUnit,{unit:true})],
-      ["سود کل ردیف", moneyCompact(r.profitTot)+" "+unitInfo().label]
-    ]), ev));
-    rect.addEventListener("mouseleave", hideTip);
-
-    const nm = el("text",{x:m.l-9,y:yy+h/2+4,"text-anchor":"end",class:"dlabel"},svg);
-    nm.textContent = shortName(r.name,15);
-    const lb = el("text",{
-      x: v>=0 ? x(v)+7 : x(v)-7, y: yy+h/2+4,
-      "text-anchor": v>=0 ? "start":"end", class:"dlabel"},svg);
-    lb.textContent = pct(v);
-  });
-
-  renderMiniTable("tblMargin",
-    ["محصول","حاشیه سود ٪","سود هر واحد","سود کل"],
-    rows.map(r=>[r.name,pct(r.marginPct),money(r.profitUnit),money(r.profitTot)]));
-}
-
-/* ---------- ۳) حساسیت به نرخ درهم ---------- */
-function drawSensitivity(){
-  const svg = document.getElementById("chSens");
-  clear(svg);
-  const cur = num(state.fx.aedIrr);
-  if(!(cur>0) || !model.rows.length){ svg.setAttribute("height",60); return; }
-
-  const W = svgW(svg), H = 280;
-  const m = {t:16, r:18, b:44, l:56};
-  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
-  svg.setAttribute("height",H);
-
-  const be = model.t.breakEvenAed;
-  const lo = Math.max(1, cur*0.6);
-  const hi = Math.max(cur*1.6, Number.isFinite(be) ? be*1.12 : cur*1.6);
-
-  const pts = [];
-  const N = 72;
-  for(let i=0;i<=N;i++){
-    const r = lo + (hi-lo)*i/N;
-    pts.push([r, portfolioMarginAt(model, r)]);
-  }
-  const ys = pts.map(p=>p[1]);
-  const yLo = Math.min(...ys, 0), yHi = Math.max(...ys, 0);
-  const padY = (yHi-yLo)*0.12 || 5;
-
-  const iw = W-m.l-m.r, ih = H-m.t-m.b;
-  const X = v => m.l + iw*(v-lo)/(hi-lo);
-  const Y = v => m.t + ih*(1-(v-(yLo-padY))/((yHi+padY)-(yLo-padY)));
-
-  // grid افقی
-  for(let i=0;i<=4;i++){
-    const v = (yLo-padY) + ((yHi+padY)-(yLo-padY))*i/4;
-    const yy = Y(v);
-    el("line",{x1:m.l,x2:W-m.r,y1:yy,y2:yy,class:"gridline"},svg);
-    const t = el("text",{x:m.l-8,y:yy+3.5,"text-anchor":"end",class:"tick"},svg);
-    t.textContent = FA.format(Math.round(v))+"٪";
-  }
-  // خط صفر
-  if(yLo-padY < 0 && yHi+padY > 0){
-    el("line",{x1:m.l,x2:W-m.r,y1:Y(0),y2:Y(0),stroke:cssVar("--axis"),"stroke-width":1.5},svg);
-    // برچسب سمت چپ می‌ماند تا با نشانگر قرمز «نرخ سربه‌سر» در سمت راست تداخل نکند
-    const z = el("text",{x:m.l+5,y:Y(0)-6,"text-anchor":"start",class:"dlabel"},svg);
-    z.textContent = "سود صفر";
-  }
-  // محور x
-  [lo, (lo+hi)/2, hi].forEach(v=>{
-    const t=el("text",{x:X(v),y:H-m.b+16,"text-anchor":"middle",class:"tick"},svg);
-    t.textContent = FA.format(Math.round(v));
-  });
-  const xl = el("text",{x:(m.l+W-m.r)/2,y:H-6,"text-anchor":"middle",class:"tick"},svg);
-  xl.textContent = "نرخ درهم (ریال)";
-
-  // خط
-  const d = pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
-  el("path",{d,fill:"none",stroke:cssVar("--s1"),"stroke-width":2,"stroke-linejoin":"round"},svg);
-
-  // نرخ امروز
-  if(cur>=lo && cur<=hi){
-    el("line",{x1:X(cur),x2:X(cur),y1:m.t,y2:H-m.b,stroke:cssVar("--muted"),
-               "stroke-width":1.5,"stroke-dasharray":"4 3"},svg);
-    const mNow = portfolioMarginAt(model, cur);
-    el("circle",{cx:X(cur),cy:Y(mNow),r:5,fill:cssVar("--s1"),
-                 stroke:cssVar("--surface"),"stroke-width":2},svg);
-    const t = el("text",{x:X(cur),y:m.t-3,"text-anchor":"middle",class:"dlabel"},svg);
-    t.textContent = "نرخ امروز";
-  }
-  // نرخ سربه‌سر
-  if(Number.isFinite(be) && be>=lo && be<=hi){
-    el("line",{x1:X(be),x2:X(be),y1:m.t,y2:H-m.b,stroke:cssVar("--critical"),
-               "stroke-width":1.5,"stroke-dasharray":"4 3"},svg);
-    const t = el("text",{x:X(be),y:H-m.b-6,"text-anchor":"middle",class:"dlabel"},svg);
-    t.setAttribute("fill", cssVar("--critical"));
-    t.textContent = "سربه‌سر "+FA.format(Math.round(be));
-  }
-
-  // لایه تعامل
-  const hit = el("rect",{x:m.l,y:m.t,width:iw,height:ih,fill:"transparent"},svg);
-  const cross = el("line",{x1:0,x2:0,y1:m.t,y2:H-m.b,stroke:cssVar("--axis"),
-                           "stroke-width":1,opacity:0},svg);
-  const dot = el("circle",{r:4.5,fill:cssVar("--s1"),stroke:cssVar("--surface"),
-                           "stroke-width":2,opacity:0},svg);
-  hit.addEventListener("mousemove", ev=>{
-    const box = svg.getBoundingClientRect();
-    const px = (ev.clientX-box.left)*(W/box.width);
-    const r = Math.min(hi, Math.max(lo, lo + (px-m.l)/iw*(hi-lo)));
-    const mg = portfolioMarginAt(model, r);
-    const landed = model.t.sumA*r + model.t.sumB;
-    const profit = model.t.sumAvail - landed;
-    cross.setAttribute("x1",X(r)); cross.setAttribute("x2",X(r)); cross.setAttribute("opacity",1);
-    dot.setAttribute("cx",X(r)); dot.setAttribute("cy",Y(mg)); dot.setAttribute("opacity",1);
-    showTip(tipBox("نرخ درهم "+FA.format(Math.round(r))+" ریال",[
-      ["حاشیه سود کل", pct(mg), cssVar("--s1")],
-      ["سود کل", moneyCompact(profit)+" "+unitInfo().label],
-      ["بهای تمام‌شده کل", moneyCompact(landed)+" "+unitInfo().label],
-      ["نسبت به نرخ امروز", (r>=cur?"+":"")+pct((r-cur)/Math.max(cur,1)*100)]
-    ]), ev);
-  });
-  hit.addEventListener("mouseleave", ()=>{
-    hideTip(); cross.setAttribute("opacity",0); dot.setAttribute("opacity",0);
-  });
-
-  const steps = [0.8,0.9,1,1.1,1.2,1.3].map(f=>{
-    const r = cur*f;
-    return [FA.format(Math.round(r)), pct(portfolioMarginAt(model,r))];
-  });
-  renderMiniTable("tblSens", ["نرخ درهم (ریال)","حاشیه سود کل"], steps);
-}
-
-/* ---------- ۴) نرخ درهم سربه‌سر هر کالا ---------- */
-function drawBreakEven(){
-  const svg = document.getElementById("chBreak");
-  clear(svg);
-  const rows = model.rows.filter(r=>Number.isFinite(r.breakEvenAed) && r.breakEvenAed>0);
-  if(!rows.length){ svg.setAttribute("height",60); return; }
-
-  const cur = num(state.fx.aedIrr);
-  const W = svgW(svg), rowH = 30, H = rows.length*rowH + 52;
-  const m = {t:14, r:74, b:28, l:110};
-  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
-  svg.setAttribute("height",H);
-
-  const maxV = niceMax(Math.max(...rows.map(r=>r.breakEvenAed), cur*1.1));
-  const iw = W-m.l-m.r;
-  const X = v => m.l + iw*v/maxV;
-
-  for(let i=0;i<=4;i++){
-    const v = maxV*i/4, xx = X(v);
-    el("line",{x1:xx,x2:xx,y1:m.t,y2:H-m.b,class:i?"gridline":"baseline"},svg);
-    const t = el("text",{x:xx,y:H-m.b+15,"text-anchor":"middle",class:"tick"},svg);
-    t.textContent = FA.format(Math.round(v));
-  }
-
-  rows.forEach((r,i)=>{
-    const yy = m.t + i*rowH + 5, h = rowH-13;
-    const safe = r.breakEvenAed > cur;
-    const c = safe ? cssVar("--s1") : cssVar("--critical");
-    const rect = el("rect",{x:m.l,y:yy,width:Math.max(X(r.breakEvenAed)-m.l,1.5),
-                            height:h,fill:c,rx:2},svg);
-    rect.style.cursor="pointer";
-    const headroom = (r.breakEvenAed-cur)/Math.max(cur,1)*100;
-    rect.addEventListener("mousemove", ev=>showTip(tipBox(r.name||"—",[
-      ["نرخ سربه‌سر درهم", FA.format(Math.round(r.breakEvenAed))+" ریال", c],
-      ["نرخ امروز", FA.format(Math.round(cur))+" ریال"],
-      ["حاشیه امنیت ارزی", (headroom>=0?"+":"")+pct(headroom)],
-      ["حاشیه سود فعلی", pct(r.marginPct)]
-    ]), ev));
-    rect.addEventListener("mouseleave", hideTip);
-
-    const nm = el("text",{x:m.l-9,y:yy+h/2+4,"text-anchor":"end",class:"dlabel"},svg);
-    nm.textContent = shortName(r.name,15);
-    const lb = el("text",{x:X(r.breakEvenAed)+7,y:yy+h/2+4,class:"dlabel"},svg);
-    lb.textContent = (headroom>=0?"+":"")+FA.format(Math.round(headroom))+"٪";
-    lb.setAttribute("fill", safe ? cssVar("--good-text") : cssVar("--critical"));
-  });
-
-  // خط نرخ امروز
-  if(cur>0 && cur<=maxV){
-    el("line",{x1:X(cur),x2:X(cur),y1:m.t-4,y2:H-m.b,stroke:cssVar("--ink-2"),
-               "stroke-width":1.5,"stroke-dasharray":"4 3"},svg);
-    const t = el("text",{x:X(cur),y:m.t-6,"text-anchor":"middle",class:"dlabel"},svg);
-    t.textContent = "نرخ امروز";
-  }
-
-  renderMiniTable("tblBreak",
-    ["محصول","نرخ سربه‌سر درهم (ریال)","حاشیه امنیت ٪"],
-    rows.map(r=>[r.name, FA.format(Math.round(r.breakEvenAed)),
-                 pct((r.breakEvenAed-cur)/Math.max(cur,1)*100)]));
-}
-
-/* ---------- جدول همراه نمودار ---------- */
-function renderMiniTable(id, headers, rows){
-  const host = document.getElementById(id);
-  host.textContent = "";
-  const tb = document.createElement("table");
-  const th = document.createElement("thead"), htr = document.createElement("tr");
-  headers.forEach((h,i)=>{
-    const c=document.createElement("th"); if(i>0) c.className="num"; c.textContent=h; htr.appendChild(c);
-  });
+function miniTable(id, heads, rows){
+  const host=document.getElementById(id); host.textContent="";
+  const tb=document.createElement("table"), th=document.createElement("thead"), htr=document.createElement("tr");
+  heads.forEach((h,i)=>{ const c=document.createElement("th"); if(i>0)c.className="num"; c.textContent=h; htr.appendChild(c); });
   th.appendChild(htr); tb.appendChild(th);
-  const bd = document.createElement("tbody");
-  rows.forEach(r=>{
-    const tr=document.createElement("tr");
-    r.forEach((v,i)=>{
-      const c=document.createElement("td"); if(i>0) c.className="num";
-      c.textContent = v==null? "—" : String(v); tr.appendChild(c);
-    });
-    bd.appendChild(tr);
-  });
+  const bd=document.createElement("tbody");
+  rows.forEach(r=>{ const tr=document.createElement("tr");
+    r.forEach((v,i)=>{ const c=document.createElement("td"); if(i>0)c.className="num"; c.textContent=v==null?"—":String(v); tr.appendChild(c); });
+    bd.appendChild(tr); });
   tb.appendChild(bd); host.appendChild(tb);
 }
 
-/* =======================================================================
-   خروجی CSV
-   ======================================================================= */
-function exportCsv(){
-  const u = unitInfo();
-  const head = ["نام محصول","تعداد","قیمت خرید هر واحد (درهم)","وزن کل (کیلوگرم)",
-    "ارزش گمرکی هر واحد (درهم)","تعرفه اعمال‌شده ٪","ضایعات ٪","تعداد قابل فروش",
-    "کالا","کرایه+بیمه","حقوق ورودی","حمل داخلی+ترخیص","جانبی",
-    `بهای تمام‌شده کل (${u.label})`,`بهای تمام‌شده هر واحد (${u.label})`,
-    `فروش خالص هر واحد (${u.label})`,`سود هر واحد (${u.label})`,"حاشیه سود ٪",
-    `سود کل (${u.label})`,`نقطه سربه‌سر فروش (${u.label})`,
-    `قیمت پیشنهادی حاشیه هدف (${u.label})`,"نرخ سربه‌سر درهم (ریال)",
-    "روز درگیری سرمایه","بازده سالانه‌شده ٪"];
-  const n = v => Number.isFinite(v) ? Math.round(v/u.div) : "";
-  const lines = [head.join(",")];
-  model.rows.forEach(r=>{
-    lines.push([
-      `"${(r.name||"").replace(/"/g,'""')}"`, r.qty, r.unitPriceAed, r.weightKg,
-      num(r.customsValueAed) || "", r.dutyPct.toFixed(1), r.lossPct, Math.round(r.effQty),
-      n(r.goodsIrr), n(r.freightIrr+r.insuranceIrr), n(r.dutyIrr),
-      n(r.inlandIrr+r.lumpIrr), n(r.extraIrr),
-      n(r.landedIrr), n(r.landedUnit), n(r.netRevUnit), n(r.profitUnit),
-      r.marginPct.toFixed(1), n(r.profitTot), n(r.breakEvenShelf),
-      Number.isFinite(r.targetShelf)?n(r.targetShelf):"",
-      Number.isFinite(r.breakEvenAed)?Math.round(r.breakEvenAed):"",
-      r.days, r.roiAnnual.toFixed(1)
-    ].join(","));
-  });
-  lines.push("");
-  lines.push(`"نرخ درهم (ریال)",${state.fx.aedIrr}`);
-  lines.push(`"نرخ دلار (ریال)",${state.fx.usdIrr}`);
-  lines.push(`"منبع نرخ","${state.fx.source||"ورود دستی"}"`);
-  lines.push(`"ضریب ارزش گمرکی ٪",${num(state.ship.customsUpliftPct)}`);
-  lines.push(`"حاشیه سود هدف ٪",${num(state.targetMarginPct)}`);
-  lines.push(`"تاریخ خروجی","${new Date().toLocaleString("fa-IR")}"`);
+const SEGS = [
+  {k:"goods",   label:"خودِ جنس",        v:"--s1"},
+  {k:"freight", label:"کرایه حمل",       v:"--s2"},
+  {k:"customs", label:"ترخیص و گمرک",    v:"--s3"},
+  {k:"other",   label:"سایر هزینه‌ها",   v:"--s4"},
+  {k:"tax",     label:"عوارض و مالیات",  v:"--s5"}
+];
 
-  saveFile("بهای-تمام-شده-واردات.csv", "﻿"+lines.join("\r\n"));
+function drawStack(){
+  const svg=document.getElementById("chStack"); clear(svg);
+  const rows=model.rows, colors=SEGS.map(s=>cssVar(s.v));
+  const used = SEGS.filter(s=>rows.some(r=>r.seg[s.k] > 0));
+  const lg=document.getElementById("lgStack"); lg.textContent="";
+  used.forEach(s=>{
+    const it=document.createElement("span"); it.className="item";
+    const sw=document.createElement("span"); sw.className="sw";
+    sw.style.background=colors[SEGS.indexOf(s)];
+    it.append(sw, document.createTextNode(s.label)); lg.appendChild(it);
+  });
+  if(!rows.length){ svg.setAttribute("height",60); return; }
+
+  const W=svgW(svg), H=300, m={t:26,r:12,b:56,l:88};
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.setAttribute("height",H);
+  const maxV=niceMax(Math.max(...rows.map(r=>r.landedUnit),1));
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const bw=Math.min(58, iw/rows.length*0.62);
+  const X=i=>m.l+iw*(i+0.5)/rows.length, Y=v=>m.t+ih*(1-v/maxV);
+
+  for(let i=0;i<=4;i++){
+    const v=maxV*i/4, y=Y(v);
+    el("line",{x1:m.l,x2:W-m.r,y1:y,y2:y,class:i?"gridline":"baseline"},svg);
+    el("text",{x:m.l-8,y:y+3.5,"text-anchor":"end",class:"tick"},svg).textContent = moneyC(v);
+  }
+  el("text",{x:m.l-8,y:m.t-13,"text-anchor":"end",class:"tick"},svg).textContent = unitLabel();
+
+  rows.forEach((r,i)=>{
+    let acc=0; const cx=X(i)-bw/2;
+    SEGS.forEach((s,si)=>{
+      const v=r.seg[s.k]; if(v<=0) return;
+      const y0=Y(acc+v), y1=Y(acc), h=Math.max(0,y1-y0-2);
+      if(h>0){
+        const rect=el("rect",{x:cx,y:y0,width:bw,height:h,fill:colors[si],rx:2},svg);
+        rect.style.cursor="pointer";
+        rect.addEventListener("mousemove",ev=>showTip(tipBox(r.name||"—",[
+          [s.label, money(v)+" "+unitLabel(), colors[si]],
+          ["سهم", pct(r.landedUnit>0?v/r.landedUnit*100:0)],
+          ["کل هر عدد", money(r.landedUnit)+" "+unitLabel()]
+        ]),ev));
+        rect.addEventListener("mouseleave",hideTip);
+      }
+      acc+=v;
+    });
+    el("text",{x:X(i),y:Y(r.landedUnit)-6,"text-anchor":"middle",class:"dlabel"},svg).textContent = moneyC(r.landedUnit);
+    el("text",{x:X(i),y:H-m.b+16,"text-anchor":"middle",class:"tick"},svg).textContent = shortName(r.name,12);
+  });
+  miniTable("tblStack", ["کالا",...used.map(s=>s.label),"جمع هر عدد"],
+    rows.map(r=>[r.name,...used.map(s=>money(r.seg[s.k])),money(r.landedUnit)]));
 }
 
-/* ذخیره فایل در دو محیط متفاوت:
-   - فایل محلی index.html: لینک معمولی مرورگر کار می‌کند.
-   - صفحه منتشرشده روی claude.ai: لینک دانلود بی‌اثر است و باید از
-     مسیر مجاز خود صفحه رد شویم، که از کاربر تأیید می‌گیرد. */
+function drawMargin(){
+  const svg=document.getElementById("chMargin"); clear(svg);
+  const rows=model.rows;
+  if(!rows.length){ svg.setAttribute("height",60); return; }
+  const W=svgW(svg), rowH=30, H=rows.length*rowH+52, m={t:12,r:58,b:28,l:112};
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.setAttribute("height",H);
+  const vals=rows.map(r=>r.marginPct);
+  const span=Math.max(niceMax(Math.max(...vals.map(Math.abs),5)),5);
+  const iw=W-m.l-m.r, X=v=>m.l+iw*(v+span)/(2*span);
+  const pos=cssVar("--s1"), neg=cssVar("--critical");
+  [-span,-span/2,0,span/2,span].forEach(v=>{
+    const x=X(v);
+    el("line",{x1:x,x2:x,y1:m.t,y2:H-m.b,class:v===0?"baseline":"gridline"},svg);
+    el("text",{x:x,y:H-m.b+15,"text-anchor":"middle",class:"tick"},svg).textContent = FA.format(Math.round(v))+"٪";
+  });
+  rows.forEach((r,i)=>{
+    const y=m.t+i*rowH+5, h=rowH-13, v=r.marginPct;
+    const c=v>=0?pos:neg, x0=Math.min(X(0),X(v)), w=Math.abs(X(v)-X(0));
+    const rect=el("rect",{x:x0,y:y,width:Math.max(w,1.5),height:h,fill:c,rx:2},svg);
+    rect.style.cursor="pointer";
+    rect.addEventListener("mousemove",ev=>showTip(tipBox(r.name||"—",[
+      ["درصد سود", pct(v), c],
+      ["سود هر عدد", money(r.profitUnit)+" "+unitLabel()],
+      ["بهای تمام‌شده", money(r.landedUnit)+" "+unitLabel()],
+      ["سود کل", moneyC(r.profit)+" "+unitLabel()]
+    ]),ev));
+    rect.addEventListener("mouseleave",hideTip);
+    el("text",{x:m.l-9,y:y+h/2+4,"text-anchor":"end",class:"dlabel"},svg).textContent = shortName(r.name,15);
+    const lb=el("text",{x:v>=0?X(v)+7:X(v)-7,y:y+h/2+4,"text-anchor":v>=0?"start":"end",class:"dlabel"},svg);
+    lb.textContent = pct(v);
+  });
+  miniTable("tblMargin", ["کالا","سود ٪","سود هر عدد","سود کل"],
+    rows.map(r=>[r.name,pct(r.marginPct),money(r.profitUnit),money(r.profit)]));
+}
+
+function drawSens(){
+  const svg=document.getElementById("chSens"); clear(svg);
+  const cur=num(state.fx.usdToman);
+  if(!(cur>0) || !model.rows.length){ svg.setAttribute("height",60); return; }
+  const W=svgW(svg), H=270, m={t:16,r:18,b:44,l:58};
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.setAttribute("height",H);
+  const be=model.t.breakEvenUsd;
+  const lo=Math.max(1,cur*0.6), hi=Math.max(cur*1.6, Number.isFinite(be)?be*1.12:cur*1.6);
+  const pts=[]; for(let i=0;i<=72;i++){ const r=lo+(hi-lo)*i/72; pts.push([r,portfolioMarginAt(model,r)]); }
+  const ys=pts.map(p=>p[1]); const yLo=Math.min(...ys,0), yHi=Math.max(...ys,0);
+  const pad=(yHi-yLo)*0.12||5, iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const X=v=>m.l+iw*(v-lo)/(hi-lo), Y=v=>m.t+ih*(1-(v-(yLo-pad))/((yHi+pad)-(yLo-pad)));
+  for(let i=0;i<=4;i++){
+    const v=(yLo-pad)+((yHi+pad)-(yLo-pad))*i/4, y=Y(v);
+    el("line",{x1:m.l,x2:W-m.r,y1:y,y2:y,class:"gridline"},svg);
+    el("text",{x:m.l-8,y:y+3.5,"text-anchor":"end",class:"tick"},svg).textContent = FA.format(Math.round(v))+"٪";
+  }
+  if(yLo-pad<0 && yHi+pad>0){
+    el("line",{x1:m.l,x2:W-m.r,y1:Y(0),y2:Y(0),stroke:cssVar("--axis"),"stroke-width":1.5},svg);
+    el("text",{x:m.l+5,y:Y(0)-6,class:"dlabel"},svg).textContent = "سود صفر";
+  }
+  [lo,(lo+hi)/2,hi].forEach(v=>{
+    el("text",{x:X(v),y:H-m.b+16,"text-anchor":"middle",class:"tick"},svg).textContent = FA.format(Math.round(v));
+  });
+  el("text",{x:(m.l+W-m.r)/2,y:H-6,"text-anchor":"middle",class:"tick"},svg).textContent = "قیمت دلار (تومان)";
+  el("path",{d:pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" "),
+             fill:"none",stroke:cssVar("--s1"),"stroke-width":2},svg);
+  if(cur>=lo && cur<=hi){
+    el("line",{x1:X(cur),x2:X(cur),y1:m.t,y2:H-m.b,stroke:cssVar("--muted"),"stroke-width":1.5,"stroke-dasharray":"4 3"},svg);
+    el("circle",{cx:X(cur),cy:Y(portfolioMarginAt(model,cur)),r:5,fill:cssVar("--s1"),stroke:cssVar("--surface"),"stroke-width":2},svg);
+    el("text",{x:X(cur),y:m.t-3,"text-anchor":"middle",class:"dlabel"},svg).textContent = "امروز";
+  }
+  if(Number.isFinite(be) && be>=lo && be<=hi){
+    el("line",{x1:X(be),x2:X(be),y1:m.t,y2:H-m.b,stroke:cssVar("--critical"),"stroke-width":1.5,"stroke-dasharray":"4 3"},svg);
+    const t=el("text",{x:X(be),y:H-m.b-6,"text-anchor":"middle",class:"dlabel"},svg);
+    t.setAttribute("fill",cssVar("--critical")); t.textContent = "سربه‌سر "+FA.format(Math.round(be));
+  }
+  const hit=el("rect",{x:m.l,y:m.t,width:iw,height:ih,fill:"transparent"},svg);
+  hit.style.cursor="crosshair";
+  hit.addEventListener("mousemove",ev=>{
+    const box=svg.getBoundingClientRect();
+    const px=(ev.clientX-box.left)*(W/box.width);
+    const r=Math.min(hi,Math.max(lo, lo+(px-m.l)/iw*(hi-lo)));
+    const landed=model.t.sumA*r+model.t.sumB;
+    showTip(tipBox("دلار "+FA.format(Math.round(r))+" تومان",[
+      ["درصد سود", pct(portfolioMarginAt(model,r)), cssVar("--s1")],
+      ["سود کل", moneyC(model.t.sumAvail-landed)+" "+unitLabel()],
+      ["هزینه کل", moneyC(landed)+" "+unitLabel()]
+    ]),ev);
+  });
+  hit.addEventListener("mouseleave",hideTip);
+  miniTable("tblSens", ["قیمت دلار","درصد سود"],
+    [0.8,0.9,1,1.1,1.2,1.3].map(f=>[FA.format(Math.round(cur*f)), pct(portfolioMarginAt(model,cur*f))]));
+}
+
+/* =======================================================================
+   خروجی اکسل / چاپ
+   ======================================================================= */
+function exportCsv(){
+  const u = unitLabel();
+  const head = ["نام کالا","ارز خرید","قیمت خرید هر عدد","تعداد","وزن کل (کیلوگرم)",
+    `خودِ جنس (${u})`,`کرایه حمل (${u})`,`ترخیص و گمرک (${u})`,`سایر (${u})`,`عوارض (${u})`,
+    `بهای تمام‌شده کل (${u})`,`بهای تمام‌شده هر عدد (${u})`,`قیمت فروش هر عدد (${u})`,
+    `سود هر عدد (${u})`,"درصد سود",`سود کل (${u})`,
+    `کمترین قیمت بدون ضرر (${u})`,`قیمت پیشنهادی (${u})`,"دلار سربه‌سر (تومان)"];
+  const n = v => Number.isFinite(v) ? Math.round(v*unitMul()) : "";
+  const L = [head.join(",")];
+  model.rows.forEach(r=>{
+    L.push([`"${(r.name||"").replace(/"/g,'""')}"`, r.cur, r.unitPrice, r.qty, r.weightKg,
+      n(r.goodsToman), n(r.freightT), n(r.customsT), n(r.otherT), n(r.taxT),
+      n(r.landed), n(r.landedUnit), n(r.sellPrice), n(r.profitUnit),
+      r.marginPct.toFixed(1), n(r.profit), n(r.breakEvenPrice),
+      Number.isFinite(r.targetPrice)?n(r.targetPrice):"",
+      Number.isFinite(r.breakEvenUsd)?Math.round(r.breakEvenUsd):""].join(","));
+  });
+  L.push("");
+  L.push(`"قیمت دلار (تومان)",${Math.round(state.fx.usdToman)}`);
+  CUR.filter(c=>c.c!=="USD").forEach(c=>L.push(`"قیمت ${c.fa} (تومان)",${Math.round(toToman(c.c))}`));
+  L.push(`"منبع نرخ","${state.fx.source||"دستی"}"`);
+  L.push(`"تاریخ","${new Date().toLocaleString("fa-IR")}"`);
+  saveFile("حساب-کتاب-واردات.csv", "﻿"+L.join("\r\n"));
+}
+
 async function saveFile(filename, text){
   const dl = (window.claude && window.claude.downloads) || null;
-
   if(dl){
-    try{
-      await dl.save({filename, data:text});
-      return;
-    }catch(err){
-      const code = err && err.code;
-      if(code === "declined") return;                 // کاربر خودش نخواست
-      if(code === "extension_not_enabled"){
-        // پسوند csv همه‌جا مجاز نیست؛ همان محتوا را با پسوند txt می‌دهیم
-        try{
-          await dl.save({filename: filename.replace(/\.csv$/i, ".txt"), data:text});
-          toast("فایل با پسوند txt ذخیره شد. برای باز کردن در اکسل، پسوند آن را به csv تغییر دهید.");
-          return;
-        }catch(e2){
-          if(e2 && e2.code === "declined") return;
-        }
+    try{ await dl.save({filename, data:text}); return; }
+    catch(err){
+      const c = err && err.code;
+      if(c === "declined") return;
+      if(c === "extension_not_enabled"){
+        try{ await dl.save({filename:filename.replace(/\.csv$/i,".txt"), data:text});
+             toast("با پسوند txt ذخیره شد؛ برای اکسل پسوند را به csv تغییر دهید."); return; }
+        catch(e2){ if(e2 && e2.code === "declined") return; }
       }
-      if(code === "too_large"){  toast("حجم فایل بیش از حد مجاز است."); return; }
-      if(code === "rate_limited"){ toast("چند لحظه صبر کنید و دوباره بزنید."); return; }
-      toast("ذخیره فایل در این نسخه ممکن نیست؛ از فایل index.html روی رایانه استفاده کنید.");
-      return;
+      toast("ذخیره در این نسخه ممکن نیست. از فایل روی رایانه استفاده کنید."); return;
     }
   }
-
   const blob = new Blob([text], {type:"text/csv;charset=utf-8"});
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
+  a.href = URL.createObjectURL(blob); a.download = filename;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
 }
 
 function toast(msg){
   let t = document.getElementById("toast");
-  if(!t){ t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
-  t.textContent = msg;
-  t.classList.add("show");
+  if(!t){ t=document.createElement("div"); t.id="toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("show");
   clearTimeout(toast._t);
   toast._t = setTimeout(()=>t.classList.remove("show"), 5600);
 }
 
+let themeBeforePrint=null, printing=false;
+function syncPrintCells(){
+  document.querySelectorAll("#inBody td").forEach(td=>{
+    const c = td.querySelector("input,select");
+    if(!c) return;
+    td.setAttribute("data-print", c.tagName==="SELECT" ? c.options[c.selectedIndex].textContent : c.value);
+  });
+}
+function enterPrint(){
+  if(printing) return; printing=true;
+  syncPrintCells();
+  themeBeforePrint = document.documentElement.getAttribute("data-theme");
+  document.documentElement.setAttribute("data-theme","light");
+  PRINT_W = 700; render();
+}
+function exitPrint(){
+  if(!printing) return; printing=false;
+  if(themeBeforePrint) document.documentElement.setAttribute("data-theme", themeBeforePrint);
+  else document.documentElement.removeAttribute("data-theme");
+  PRINT_W = 0; render();
+}
+addEventListener("beforeprint", enterPrint);
+addEventListener("afterprint", exitPrint);
+
 /* =======================================================================
-   راهنمای تک‌تک فیلدها
-   کلید هر مدخل = شناسه همان ورودی (id) یا نام ستون در جدول کالاها.
+   راهنمای فیلدها
    ======================================================================= */
 const FIELD_HELP = {
+usdIrr:{g:"۱ · ارز", t:"قیمت دلار",
+  what:"قیمت یک دلار آمریکا به تومان، در بازار آزاد.",
+  why:"تنها نرخی که باید دستی وارد کنید. قیمت درهم، یوان، یورو و بقیه ارزها همه از روی همین یکی حساب می‌شوند، چون نسبتشان با دلار تقریباً ثابت است.",
+  how:"از صرافی بپرسید، یا دکمه «دریافت خودکار نرخ‌ها» را بزنید.",
+  note:"نرخ رسمی یا نیما را وارد نکنید. اگر عدد را اشتباه بزنید، همه چیز اشتباه می‌شود — این مهم‌ترین خانه صفحه است."},
 
-/* ---------- بخش ۱ — نرخ ارز ---------- */
-usdIrr:{ g:"۱ · نرخ ارز", t:"دلار آمریکا → ریال",
-  what:"نرخ آزاد هر دلار آمریکا به ریال.",
-  why:"مستقیم در بهای تمام‌شده استفاده نمی‌شود، چون خرید شما درهمی است. اینجا نقش مرجع دارد و ابزار می‌تواند نرخ درهم را از آن بسازد.",
-  how:"نرخ بازار آزاد روز را از صرافی بگیرید. اگر دلار را عوض کنید و نرخ درهم بیش از ۲۵٪ با نرخ میخکوب فاصله بگیرد، درهم خودش اصلاح می‌شود.",
-  note:"نرخ رسمی یا نیما را وارد نکنید. ابزار هر نرخ زیر ۲۰۰٬۰۰۰ ریال را به‌عنوان نرخ رسمی رد می‌کند، ولی نرخ نیمای بالاتر را نمی‌تواند تشخیص دهد — این یکی با شماست."},
+freightAmt:{g:"۲ · هزینه آوردن", t:"کرایه حمل تا ایران",
+  what:"کل پولی که بابت رساندن محموله به ایران می‌دهید — دریایی، زمینی یا هوایی.",
+  why:"بین کالاها تقسیم می‌شود، پس روی بهای تمام‌شده همه اثر می‌گذارد.",
+  how:"مبلغ کل را بنویسید (نه برای هر کیلو)، و ارزی که پرداخت کرده‌اید را از کنارش انتخاب کنید.",
+  note:"حمل هوایی گران‌تر است ولی پول شما زودتر برمی‌گردد. می‌توانید یک بار با کرایه هوایی و یک بار دریایی حساب کنید و مقایسه کنید."},
 
-aedIrr:{ g:"۱ · نرخ ارز", t:"درهم امارات → ریال",
-  what:"نرخ آزاد هر درهم امارات به ریال.",
-  why:"مبنای اصلی همه محاسبات. قیمت خرید، کرایه دریایی و ارزش گمرکی همه درهمی‌اند، پس این تک عدد بیش از هر ورودی دیگری بهای تمام‌شده را جابه‌جا می‌کند.",
-  how:"از صرافی، همان روزی که می‌خواهید تصمیم بگیرید. کهنه‌بودن این عدد یعنی کهنه‌بودن کل خروجی.",
-  note:"نمودار «حساسیت سود به نرخ درهم» نشان می‌دهد اگر این عدد بالا برود سود به کجا می‌رسد و کجا صفر می‌شود."},
+customsAmt:{g:"۲ · هزینه آوردن", t:"ترخیص و گمرک",
+  what:"هرچه بابت گمرک و ترخیص‌کار پرداخت می‌کنید، یک‌جا و سرجمع.",
+  why:"معمولاً بعد از خودِ جنس بزرگ‌ترین هزینه است و بیشتر از همه دست‌کم گرفته می‌شود.",
+  how:"از ترخیص‌کارتان یک عدد کل بگیرید و همین‌جا بنویسید. لازم نیست تفکیک کنید.",
+  note:"اگر می‌خواهید حقوق ورودی را جداگانه و بر اساس درصد حساب کنید، به حالت «پیشرفته» بروید."},
 
-usdAed:{ g:"۱ · نرخ ارز", t:"دلار → درهم (نرخ میخکوب)",
-  what:"نرخ تبدیل دلار به درهم: ۳٫۶۷۲۵.",
-  why:"درهم امارات به دلار میخکوب (peg) است و بانک مرکزی امارات آن را ثابت نگه می‌دارد. برخلاف ریال، عملاً نوسان ندارد.",
-  how:"دست نزنید مگر اینکه سیاست ارزی امارات عوض شود.",
-  note:"کاربردش این است که اگر فقط نرخ دلار را می‌دانید، ابزار نرخ درهم را از روی آن بسازد."},
+otherAmt:{g:"۲ · هزینه آوردن", t:"سایر هزینه‌ها",
+  what:"انبارداری، حمل داخلی تا انبار خودتان، بسته‌بندی مجدد، برچسب، مجوز.",
+  why:"هرکدام کوچک‌اند ولی جمعشان قابل توجه است، و اگر ننویسید سود را بیشتر از واقع می‌بینید.",
+  how:"مبلغ کل محموله. اگر مطمئن نیستید، یک عدد تقریبی بگذارید — بهتر از صفر است."},
 
-purchaseAedIrr:{ g:"۱ · نرخ ارز", t:"نرخ درهم در روز خرید",
-  what:"نرخی که واقعاً با آن ارز خریدید و پول را به دبی فرستادید.",
-  why:"روی بهای تمام‌شده هیچ اثری ندارد — همه اعداد با نرخ امروز حساب می‌شوند. این فیلد فقط کادر «ریسک ارزی» را می‌سازد.",
-  how:"اگر هنوز خرید نکرده‌اید، همان نرخ امروز را بگذارید تا دو عدد یکی شوند.",
-  note:"تفاوت این دو نرخ تعیین می‌کند سود دفتری چقدر از سود واقعی بیشتر است. اگر ریال ضعیف شده باشد، بخشی از آن «سود» فقط برای خرید دوباره همان مقدار جنس کافی است."},
+split:{g:"۲ · هزینه آوردن", t:"تقسیم هزینه بین کالاها",
+  what:"هزینه‌های بالا مال کل محموله است؛ این تعیین می‌کند سهم هر کالا چقدر باشد.",
+  why:"با «قیمت کالا»، جنس گران‌تر سهم بیشتری برمی‌دارد. با «وزن»، جنس سنگین‌تر. انتخاب اشتباه سود یک کالا را به قیمت کالای دیگر زیبا نشان می‌دهد.",
+  how:"اگر بیشتر هزینه‌تان کرایه است، «وزن» را بزنید. اگر بیشتر گمرک است، «قیمت کالا».",
+  note:"یک بار عوضش کنید و نتیجه را ببینید. اگر سود یک کالا زیر و رو شد، یعنی حاشیه‌اش واقعاً نازک است."},
 
-navasanKey:{ g:"۱ · نرخ ارز", t:"کلید API نوسان",
-  what:"کلید سرویس navasan.tech برای دریافت خودکار نرخ بازار آزاد.",
-  why:"منابع رایگان نرخ آزاد ناپایدارند و ممکن است به‌خاطر CORS، فیلترینگ یا تغییر ساختارشان جواب ندهند.",
-  how:"اختیاری است. اگر ندارید، نرخ را دستی وارد کنید — چیزی از کار نمی‌افتد.",
-  note:"در نسخه لینک‌دار (روی گوشی) دریافت خودکار اصلاً فعال نیست و نرخ همیشه باید دستی وارد شود."},
+dutyPct:{g:"۲ · پیشرفته", t:"حقوق ورودی گمرک (٪)",
+  what:"درصد حقوق ورودی روی ارزش جنس.",
+  why:"فقط وقتی لازم است که بخواهید گمرک را درصدی حساب کنید، نه با مبلغ مقطوع.",
+  how:"اگر مبلغ گمرک را در بخش بالا وارد کرده‌اید، اینجا را صفر بگذارید تا دوبار حساب نشود.",
+  note:"صفر یعنی این خانه هیچ اثری ندارد."},
 
-/* ---------- بخش ۲ — پارامترهای محموله ---------- */
-freightPerKgAed:{ g:"۲ · محموله", t:"کرایه دبی ← بندرعباس",
-  what:"هزینه حمل دریایی از دبی تا بندرعباس، به درهم برای هر کیلوگرم.",
-  why:"چون درهمی است، با بالا رفتن نرخ ارز این هزینه هم بالا می‌رود. ضمناً جزو ارزش CIF می‌شود، پس حقوق ورودی روی آن هم بسته می‌شود.",
-  how:"از فورواردر بگیرید. حمل دریایی گروپاژ (LCL) معمولاً چند درهم بر کیلوست؛ حمل هوایی چند برابر.",
-  note:"اگر کرایه را مقطوع برای کل محموله گرفته‌اید، بر وزن کل تقسیم کنید."},
+vatPct:{g:"۲ · پیشرفته", t:"ارزش افزوده (٪)",
+  what:"مالیات بر ارزش افزوده، روی ارزش جنس و حقوق ورودی.",
+  why:"اگر مؤدی ثبت‌نام‌شده باشید این مالیات با مالیات فروشتان تهاتر می‌شود و عملاً هزینه نیست.",
+  how:"اگر ثبت‌نام مالیاتی دارید صفر بگذارید. اگر ندارید و واقعاً هزینه‌تان می‌شود، نرخ روز را بنویسید."},
 
-insurancePct:{ g:"۲ · محموله", t:"بیمه",
-  what:"درصد بیمه باربری نسبت به ارزش کالا.",
-  why:"جزو ارزش CIF می‌شود، یعنی حقوق ورودی و ارزش افزوده هم روی آن بسته می‌شوند.",
-  how:"از بیمه‌نامه باربری. معمولاً کسری از یک درصد است."},
+targetMarginPct:{g:"۳ · کالاها", t:"سود دلخواه",
+  what:"چند درصد سود می‌خواهید روی فروش داشته باشید.",
+  why:"سؤال روزمره این است: «۳۵ درصد سود می‌خواهم، چند بفروشم؟» این خانه جوابش را می‌دهد.",
+  how:"عدد را بنویسید و دکمه «قیمت‌گذاری خودکار» را بزنید تا قیمت فروش همه کالاها پر شود.",
+  note:"ستون «قیمت پیشنهادی» قبل از زدن دکمه هم عدد را نشان می‌دهد، پس اول ببینید بعد تصمیم بگیرید."},
 
-dutyPct:{ g:"۲ · محموله", t:"حقوق ورودی گمرک (کلی)",
-  what:"درصد حقوق ورودی که به‌صورت پیش‌فرض برای همه اقلام محموله اعمال می‌شود.",
-  why:"بعد از خودِ کالا، بزرگ‌ترین جزء بهای تمام‌شده است. برای لوازم آرایشی بالاست.",
-  how:"از ترخیص‌کار بگیرید، بر اساس ردیف تعرفه (کد HS).",
-  note:"اگر اقلام محموله تعرفه‌های متفاوتی دارند، ستون «تعرفه این کالا» در جدول کالاها این عدد را برای همان ردیف بازنویسی می‌کند."},
+name:{g:"۳ · کالاها", t:"نام کالا",
+  what:"نام کالا برای شناسایی.",
+  why:"اگر خالی باشد باز هم حساب می‌شود، ولی در نمودارها بی‌نام می‌ماند.",
+  how:"نام کوتاه بگذارید؛ نام‌های بلند در نمودار کوتاه می‌شوند."},
 
-customsUpliftPct:{ g:"۲ · محموله", t:"ضریب ارزش گمرکی",
-  what:"چند درصد بالاتر از فاکتور شما، گمرک ارزش کالا را می‌بندد.",
-  why:"گمرک لزوماً فاکتور شما را قبول نمی‌کند و برای بسیاری از کالاها ارزش‌گذاری خودش را دارد. اگر ارزش اعلامی را پایین بداند، حقوق ورودی و ارزش افزوده را روی عدد بالاترِ خودش می‌بندد.",
-  how:"اگر عدد دقیق هر کالا را می‌دانید، به‌جای این ضریب ستون «ارزش گمرکی هر واحد» را پر کنید. این ضریب برای وقتی است که فقط تخمین کلی دارید.",
-  note:"مثال: فاکتور یک قلم ۱۰۰ میلیون ریال و گمرک ۲۵٪ بالاتر می‌بندد. با تعرفه ۴۰٪، حقوق ورودی از ۴۰ به ۵۰ میلیون می‌رسد — ۱۰ میلیون هزینه‌ای که در برآورد اولیه نبود.",
-  blank:"صفر = فاکتور خودتان مبنا می‌شود."},
+cur:{g:"۳ · کالاها", t:"ارز خرید",
+  what:"جنس را به چه ارزی خریده‌اید.",
+  why:"هر کالا می‌تواند ارز خودش را داشته باشد — یکی از دبی به درهم، یکی از چین به یوان. ابزار همه را به تومان تبدیل می‌کند.",
+  how:"از فهرست انتخاب کنید. نرخ تبدیلش در بخش ۱ است و اگر درست نبود همان‌جا اصلاحش کنید."},
 
-inlandPerKgIrr:{ g:"۲ · محموله", t:"حمل بندرعباس ← تهران",
-  what:"کرایه حمل جاده‌ای از بندر تا انبار تهران، به ریال برای هر کیلوگرم.",
-  why:"این هزینه ریالی است، نه ارزی — و همین باعث می‌شود بهای تمام‌شده کاملاً متناسب با نرخ ارز بالا نرود. در فرمول نرخ سربه‌سر، جزو بخش ثابت (B) است.",
-  how:"از شرکت حمل. اگر کرایه کامیون مقطوع است، بر وزن کل محموله تقسیم کنید."},
+unitPrice:{g:"۳ · کالاها", t:"قیمت خرید هر عدد",
+  what:"قیمت فاکتور برای یک عدد، به همان ارزی که در ستون کناری انتخاب کرده‌اید.",
+  why:"پایه همه محاسبات.",
+  how:"اگر فاکتور برای کل تعداد است، بر تعداد تقسیم کنید.",
+  note:"مواظب باشید عدد را به ارز درست بنویسید. ۳۲ درهم با ۳۲ دلار خیلی فرق دارد."},
 
-clearanceLumpIrr:{ g:"۲ · محموله", t:"ترخیص، انبارداری، اسناد",
-  what:"مبلغ مقطوع کل محموله برای ترخیص، انبارداری بندر و اسناد.",
-  why:"چون مقطوع است و به تعداد بستگی ندارد، باید بین کالاها سرشکن شود — و مبنای سرشکن را شما انتخاب می‌کنید.",
-  how:"از ترخیص‌کار بگیرید. این عدد برای کل محموله است، نه برای هر کالا."},
+qty:{g:"۳ · کالاها", t:"تعداد",
+  what:"چند عدد از این کالا خریده‌اید.",
+  why:"هم در تقسیم هزینه‌ها اثر دارد، هم در سود کل."},
 
-otherLumpIrr:{ g:"۲ · محموله", t:"سایر هزینه‌های محموله",
-  what:"مجوز، ثبت سفارش، برچسب اصالت، آزمایشگاه، حق‌العمل و مانند آن — مقطوع کل محموله.",
-  why:"در واردات آرایشی و بهداشتی این‌ها کم نیستند و بیشتر از همه فراموش می‌شوند.",
-  how:"باز هم برای کل محموله. هزینه‌هایی که به ازای هر عدد خرج می‌شوند در ستون «هزینه جانبی هر واحد» می‌روند، نه اینجا."},
+weightKg:{g:"۳ · کالاها", t:"وزن کل",
+  what:"وزن کل این قلم به کیلوگرم — نه وزن یک عدد.",
+  why:"اگر تقسیم هزینه را روی «وزن» گذاشته باشید، سهم کرایه از روی همین حساب می‌شود.",
+  how:"وزن با بسته‌بندی را بنویسید، چون کرایه بر همان بسته می‌شود.",
+  note:"رایج‌ترین اشتباه: نوشتن وزن یک عدد به‌جای وزن کل. اگر سهم کرایه عجیب کم درآمد، اول اینجا را چک کنید."},
 
-allocBasis:{ g:"۲ · محموله", t:"مبنای سرشکن‌کردن",
-  what:"دو مبلغ مقطوع بالا چطور بین کالاها تقسیم شوند: بر اساس وزن یا بر اساس ارزش.",
-  why:"کالای سنگین و ارزان با مبنای «وزن» سهم بیشتری می‌گیرد؛ کالای سبک و گران با «ارزش». انتخاب اشتباه، سود یک کالا را به قیمت کالای دیگر زیبا نشان می‌دهد.",
-  how:"هزینه انبارداری و تخلیه به وزن نزدیک‌تر است؛ هزینه ترخیص و بیمه به ارزش. اگر ترکیبی است، هرکدام را که وزن بیشتری دارد انتخاب کنید.",
-  note:"یک بار عوضش کنید و ببینید کدام کالا جابه‌جا می‌شود. اگر سود یک کالا با تغییر مبنا زیر و رو شد، یعنی حاشیه‌اش واقعاً نازک است و به فرض حسابداری‌تان وابسته است."},
+sellPrice:{g:"۳ · کالاها", t:"قیمت فروش هر عدد",
+  what:"قیمتی که می‌خواهید هر عدد را بفروشید، به تومان.",
+  why:"سود از تفاوت این با بهای تمام‌شده درمی‌آید.",
+  how:"اگر هنوز تصمیم نگرفته‌اید، «سود دلخواه» را وارد کنید و «قیمت‌گذاری خودکار» را بزنید."},
 
-vatPct:{ g:"۲ · محموله", t:"ارزش افزوده",
-  what:"نرخ مالیات بر ارزش افزوده.",
-  why:"دو جا استفاده می‌شود: روی ارزش گمرکی هنگام ورود کالا، و برای بیرون کشیدن VAT از قیمت فروشی که وارد می‌کنید.",
-  how:"نرخ قانونی روز را بگذارید."},
+sellCostPct:{g:"۳ · پیشرفته", t:"هزینه فروش (٪)",
+  what:"درصدی از قیمت فروش که بابت پورسانت، اجاره، ارسال و تبلیغات خرج می‌شود.",
+  why:"سودی که در جیب می‌ماند از این کمتر است.",
+  how:"هزینه‌های ماهانه فروشگاه را بر فروش ماهانه تقسیم کنید تا درصد واقع‌بینانه دربیاید.",
+  note:"اگر این عدد با «سود دلخواه» جمع شود و به ۱۰۰ برسد، قیمت‌گذاری خودکار جواب نمی‌دهد."},
 
-vatRecoverable:{ g:"۲ · محموله", t:"ارزش افزوده گمرک قابل استرداد است؟",
-  what:"تعیین می‌کند VAT پرداختی در گمرک جزو بهای تمام‌شده حساب شود یا نه.",
-  why:"اگر مؤدی ثبت‌نام‌شده باشید، این VAT با VAT فروش تهاتر می‌شود و هزینه نیست — فقط پول را موقتاً حبس می‌کند. اگر آن را هزینه حساب کنید، بهای تمام‌شده را بیش‌برآورد کرده‌اید و ممکن است معامله سودده را رد کنید.",
-  how:"«بله» اگر شرکت ثبت‌نام مالیاتی دارد؛ «خیر» اگر ندارد.",
-  note:"حتی وقتی قابل استرداد است، کاشی «سرمایه لازم» آن را به حساب می‌آورد — چون به هر حال اول باید پرداختش کنید."},
-
-/* ---------- بخش ۳ — ستون‌های جدول کالاها ---------- */
-name:{ g:"۳ · کالاها", t:"نام محصول",
-  what:"نام کالا برای شناسایی در جدول‌ها و نمودارها.",
-  why:"اگر خالی بماند، کل ردیف نادیده گرفته می‌شود — نه در محاسبه می‌آید، نه در نمودار.",
-  how:"نام کوتاه و قابل تشخیص بگذارید؛ در نمودارها نام‌های بلند کوتاه می‌شوند."},
-
-unitPriceAed:{ g:"۳ · کالاها", t:"قیمت خرید هر واحد (درهم)",
-  what:"قیمت فاکتور دبی برای یک عدد، به درهم.",
-  why:"پایه همه محاسبات ارزی. ارزش CIF، حقوق ورودی و ارزش افزوده همه از اینجا شروع می‌شوند.",
-  how:"اگر فاکتور مقطوع برای کل تعداد است، بر تعداد تقسیم کنید.",
-  note:"اگر تأمین‌کننده دلاری فاکتور می‌دهد، اول به درهم تبدیل کنید (ضرب در ۳٫۶۷۲۵) — این ابزار خرید را فقط درهمی می‌شناسد."},
-
-qty:{ g:"۳ · کالاها", t:"تعداد",
-  what:"تعداد واحد این قلم در محموله.",
-  why:"هم در سرشکن‌کردن هزینه‌های مقطوع اثر دارد، هم پایه محاسبه ضایعات و سود کل ردیف است."},
-
-weightKg:{ g:"۳ · کالاها", t:"وزن کل (کیلوگرم)",
-  what:"وزن کل این قلم — نه وزن یک عدد.",
-  why:"مبنای سه چیز است: کرایه دریایی، حمل داخلی، و سرشکن وزنی هزینه‌های مقطوع. یک اشتباه اینجا هر سه را خراب می‌کند.",
-  how:"وزن ناخالص با بسته‌بندی را بنویسید، چون کرایه بر همان بسته می‌شود.",
-  note:"رایج‌ترین اشتباه در کل این ابزار: وارد کردن وزن یک عدد به‌جای وزن کل. اگر کرایه غیرمنطقی کم درآمد، اول این ستون را چک کنید."},
-
-customsValueAed:{ g:"۳ · کالاها", t:"ارزش گمرکی هر واحد (درهم)",
-  what:"ارزشی که گمرک برای هر واحد این کالا می‌بندد، به درهم.",
-  why:"حقوق ورودی و ارزش افزوده هر دو روی این عدد بسته می‌شوند، نه روی فاکتور شما. چون حقوق ورودی بعد از خود کالا بزرگ‌ترین هزینه است، خطا در اینجا چند برابر در سود ظاهر می‌شود.",
-  how:"اگر ترخیص‌کارتان عدد دقیق را می‌داند همین‌جا بنویسید. اگر فقط تخمین کلی دارید، این ستون را خالی بگذارید و «ضریب ارزش گمرکی» را در بخش ۲ تنظیم کنید.",
-  blank:"خالی = ارزش فاکتور خودتان (با ضریب بخش ۲) مبنا می‌شود."},
-
-dutyPctRow:{ g:"۳ · کالاها", t:"تعرفه این کالا",
-  what:"درصد حقوق ورودی مخصوص همین کالا.",
-  why:"درصد حقوق ورودی به ردیف تعرفه (کد HS) خودِ کالا بستگی دارد، نه به محموله. رژ لب، سرم پوست و لوازم برقی آرایشی می‌توانند تعرفه‌های متفاوتی داشته باشند. با یک تعرفه واحد، سود بعضی اقلام بیش‌برآورد و بعضی کم‌برآورد می‌شود و مقایسه بین کالاها بی‌معنا می‌شود.",
-  how:"اگر همه اقلام یک ردیف تعرفه دارند، خالی بگذارید. اگر محموله ترکیبی است، برای هر کالا درصد خودش را بنویسید.",
-  blank:"خالی = از تعرفه کلی محموله استفاده می‌شود. عدد صفر یعنی واقعاً تعرفه صفر — این دو یکی نیستند."},
-
-lossPct:{ g:"۳ · کالاها", t:"ضایعات و مرجوعی",
-  what:"چند درصد از این کالا به قیمت کامل فروخته نمی‌شود.",
-  why:"پول همه واحدها را داده‌اید، ولی همه‌شان به قیمت کامل نمی‌روند: شکستگی در حمل، نشتی، تاریخ انقضای نزدیک، مرجوعی مشتری، تخفیف آخر فصل. این درصد تعداد قابل فروش را کم می‌کند ولی بهای تمام‌شده را دست نمی‌زند — چون پولش پرداخت شده.",
-  how:"برای لوازم آرایشی معمولاً ۳ تا ۸ درصد منطقی است؛ برای شیشه‌ای و مایعات بیشتر.",
-  note:"مثال: ۶۰۰ عدد با ۵٪ ضایعات یعنی ۵۷۰ عدد فروش‌رفتنی، ولی بهای تمام‌شده هر ۶۰۰ تا. اگر صفر بگذارید، ابزار فرض می‌کند صد در صد کالا به قیمت کامل فروش می‌رود که تقریباً هیچ‌وقت درست نیست."},
-
-extraPerUnitIrr:{ g:"۳ · کالاها", t:"هزینه جانبی هر واحد",
-  what:"هزینه‌هایی که به ازای هر عدد خرج می‌شود: برچسب اصالت، لیبل فارسی، بسته‌بندی مجدد، شیرینک، جعبه.",
-  why:"کوچک به نظر می‌رسد ولی در تعداد بالا جمع می‌شود. در نمودار «ساختار بهای تمام‌شده»، بخش صورتی همین است.",
-  how:"به ریال و برای یک عدد بنویسید؛ ابزار خودش در تعداد ضرب می‌کند.",
-  note:"هزینه‌هایی که مقطوع کل محموله‌اند (مجوز، آزمایشگاه، حق‌العمل) اینجا نمی‌آیند — آن‌ها در بخش ۲ وارد می‌شوند."},
-
-marketPriceIrr:{ g:"۳ · کالاها", t:"قیمت روز بازار تهران",
-  what:"قیمتی که همین کالا الان در بازار تهران فروخته می‌شود — قیمت قفسه، با ارزش افزوده.",
-  why:"در هیچ محاسبه هزینه یا سودی وارد نمی‌شود. تنها کارش ساختن ستون «فاصله تا بازار تهران» است.",
-  how:"از رقبا، بازار، یا سایت‌های فروش. اگر نمی‌دانید خالی بگذارید؛ فقط آن یک ستون «—» می‌شود.",
-  note:"کاربرد واقعی‌اش این است: وقتی از حاشیه هدف قیمت پیشنهادی گرفتید، این ستون می‌گوید آن قیمت در بازار قابل دفاع هست یا نه."},
-
-sellPriceIrr:{ g:"۳ · کالاها", t:"قیمت فروش من",
-  what:"قیمت قفسه شما، با ارزش افزوده — همان عددی که روی برچسب می‌زنید.",
-  why:"ابزار خودش VAT را از آن بیرون می‌کشد تا سود واقعی به دست آید. اگر قیمت بدون VAT وارد کنید، سود را کمتر از واقع می‌بینید.",
-  how:"اگر نمی‌دانید چه بگذارید، حاشیه سود هدف را وارد کنید و دکمه «اعمال به همه کالاها» را بزنید."},
-
-sellCostPct:{ g:"۳ · کالاها", t:"هزینه فروش",
-  what:"درصد هزینه‌هایی که سرِ فروش خرج می‌شود: پورسانت فروشنده، اجاره فروشگاه، ارسال، تبلیغات، کارمزد درگاه پرداخت.",
-  why:"درصدی از فروش خالص (بدون VAT) است، نه از قیمت قفسه. در نقطه سربه‌سر و قیمت پیشنهادی هم اثر مستقیم دارد.",
-  how:"اگر مطمئن نیستید، هزینه‌های ماهانه فروشگاه را بر فروش ماهانه تقسیم کنید تا یک درصد واقع‌بینانه به دست آید.",
-  note:"اگر «هزینه فروش + حاشیه هدف» به ۱۰۰٪ برسد، قیمت پیشنهادی ناممکن می‌شود — یعنی با این ساختار هزینه آن حاشیه شدنی نیست."},
-
-daysHeld:{ g:"۳ · کالاها", t:"روز خرید تا فروش",
-  what:"چند روز از پرداخت پول تا فروش کامل این قلم طول می‌کشد.",
-  why:"روی سود هیچ اثری ندارد؛ فقط «بازده سالانه‌شده» را می‌سازد. سود ۴۰٪ در ۶۰ روز با سود ۴۰٪ در ۶ ماه یکی نیست و این ستون آن دو را قابل مقایسه می‌کند.",
-  how:"مجموع زمان حمل دریایی، معطلی گمرک، و مدت فروش‌رفتن موجودی را حساب کنید — نه فقط زمان حمل.",
-  note:"در محاسبه میانگین، ردیف‌هایی که سرمایه بیشتری درگیر کرده‌اند وزن بیشتری دارند."},
-
-targetMarginPct:{ g:"۳ · کالاها", t:"حاشیه سود هدف",
-  what:"حاشیه سودی که می‌خواهید به آن برسید؛ مبنای ستون «قیمت پیشنهادی».",
-  why:"سؤال روزمره واقعی این است: «۳۵٪ حاشیه می‌خواهم، چند بفروشم؟» بدون این، باید دستی قیمت را بالا و پایین کنید تا برسید.",
-  how:"عدد را وارد کنید تا ستون «قیمت پیشنهادی» قیمت قفسه لازم هر کالا را بدهد — با احتساب ضایعات، هزینه فروش و ارزش افزوده. دکمه «اعمال به همه کالاها» قیمت‌ها را با همان اعداد پر می‌کند.",
-  note:"بعد از اعمال، ستون «فاصله تا بازار تهران» را نگاه کنید. اگر قیمت پیشنهادی خیلی بالاتر از بازار درآمد، آن حاشیه در این بازار قابل دفاع نیست و باید یا هزینه را پایین بیاورید یا انتظار حاشیه را."}
+lossPct:{g:"۳ · پیشرفته", t:"ضایعات (٪)",
+  what:"چند درصد از کالا به قیمت کامل فروخته نمی‌شود: شکستگی، انقضا، مرجوعی، تخفیف آخر فصل.",
+  why:"پول همه را داده‌اید ولی همه به قیمت کامل نمی‌روند. بدون این، سود خوش‌بینانه‌تر از واقعیت است.",
+  how:"برای لوازم آرایشی معمولاً ۳ تا ۸ درصد. برای شیشه‌ای بیشتر.",
+  note:"۶۰۰ عدد با ۵٪ ضایعات یعنی ۵۷۰ عدد فروش‌رفتنی، ولی هزینه هر ۶۰۰ تا."}
 };
 
-/* ستون‌های خروجی — توضیح فشرده */
-const OUT_HELP = [
-  ["بهای تمام‌شده هر واحد","کف مطلقی که هر تصمیم قیمت‌گذاری باید بالای آن باشد."],
-  ["قیمت فروش بدون VAT","آنچه از قیمت قفسه واقعاً به شما می‌رسد."],
-  ["سود هر واحد","به ازای هر واحد خریداری‌شده، نه هر واحد فروخته‌شده — ضایعات در آن لحاظ شده."],
-  ["حاشیه سود ٪","سود ÷ درآمد خالص. مبنای مقایسه بین کالاها."],
-  ["سود کل ردیف","سود × تعداد. کالای کم‌حاشیه ولی پرتعداد اینجا خودش را نشان می‌دهد."],
-  ["نقطه سربه‌سر (قیمت فروش)","پایین‌ترین قیمت قفسه‌ای که ضرر نمی‌کنید. کف چانه‌زنی برای فروش عمده."],
-  ["قیمت پیشنهادی","قیمت لازم برای رسیدن به حاشیه سود هدف."],
-  ["نرخ سربه‌سر درهم","نرخی که در آن این کالا صفر می‌شود. سبز = بالاتر از نرخ امروز، یعنی حاشیه امنیت دارید."],
-  ["بازده سالانه‌شده ٪","سود تعدیل‌شده با زمان درگیری سرمایه."],
-  ["فاصله تا بازار تهران","منفی = ارزان‌تر از بازار، مثبت = گران‌تر."]
-];
-
-/* ---------- دکمه «؟» و پنجره راهنما ---------- */
 function helpBtn(key){
   const b = document.createElement("button");
-  b.type = "button"; b.className = "qbtn noprint"; b.textContent = "؟";
-  b.title = "راهنمای «" + FIELD_HELP[key].t + "»";
+  b.type="button"; b.className="qbtn noprint"; b.textContent="؟";
+  b.title = "راهنمای «"+FIELD_HELP[key].t+"»";
   b.setAttribute("aria-label", b.title);
-  b.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); openHelp(key); });
+  b.addEventListener("click", e=>{ e.preventDefault(); e.stopPropagation(); openHelp(key); });
   return b;
 }
-
-// هر برچسبِ دارای for و هر سربرگ جدول کالاها یک دکمه راهنما می‌گیرد
-function attachHelp(){
-  document.querySelectorAll("label[for]").forEach(lb => {
-    const k = lb.getAttribute("for");
-    if(FIELD_HELP[k] && !lb.querySelector(".qbtn")) lb.appendChild(helpBtn(k));
-  });
-  document.querySelectorAll("#inTable thead th").forEach((th,i) => {
-    const f = ROW_FIELDS[i];
-    if(f && FIELD_HELP[f.k] && !th.querySelector(".qbtn")) th.appendChild(helpBtn(f.k));
-  });
-}
-
 function helpContent(key){
-  const h = FIELD_HELP[key];
-  const f = document.createDocumentFragment();
-  [["این فیلد چیست",   h.what],
-   ["چرا مهم است",     h.why],
-   ["چطور پرش کنید",   h.how],
-   ["اگر خالی بماند",  h.blank],
-   ["نکته",            h.note]].forEach(([label, text]) => {
-    if(!text) return;
-    const d = document.createElement("div"); d.className = "hs";
-    const k = document.createElement("div"); k.className = "hk"; k.textContent = label;
-    const p = document.createElement("p"); p.textContent = text;
-    d.append(k, p); f.appendChild(d);
+  const h = FIELD_HELP[key], f = document.createDocumentFragment();
+  [["این خانه چیست",h.what],["چرا مهم است",h.why],["چطور پرش کنید",h.how],["نکته",h.note]]
+  .forEach(([l,t])=>{
+    if(!t) return;
+    const d=document.createElement("div"); d.className="hs";
+    const k=document.createElement("div"); k.className="hk"; k.textContent=l;
+    const p=document.createElement("p"); p.textContent=t;
+    d.append(k,p); f.appendChild(d);
   });
   return f;
 }
-
-let helpLastFocus = null;
+let helpLast = null;
 function openHelp(key){
-  const h = FIELD_HELP[key];
-  helpLastFocus = document.activeElement;
-  document.getElementById("helpGroup").textContent = h.g;
-  document.getElementById("helpTitle").textContent = h.t;
-  const body = document.getElementById("helpBody");
-  body.textContent = ""; body.appendChild(helpContent(key));
+  helpLast = document.activeElement;
+  document.getElementById("helpTitle").textContent = FIELD_HELP[key].t;
+  const b = document.getElementById("helpBody"); b.textContent=""; b.appendChild(helpContent(key));
   document.getElementById("helpOverlay").hidden = false;
   document.getElementById("helpClose").focus();
 }
 function closeHelp(){
   document.getElementById("helpOverlay").hidden = true;
-  if(helpLastFocus && helpLastFocus.focus) helpLastFocus.focus();
+  if(helpLast && helpLast.focus) helpLast.focus();
 }
-
-function renderHelpReference(){
-  const host = document.getElementById("helpRef");
-  host.textContent = "";
+function attachHelp(){
+  document.querySelectorAll("label[for]").forEach(lb=>{
+    const k = lb.getAttribute("for");
+    if(FIELD_HELP[k] && !lb.querySelector(".qbtn")) lb.appendChild(helpBtn(k));
+  });
+}
+function renderHelpRef(){
+  const host = document.getElementById("helpRef"); host.textContent="";
   const groups = new Map();
-  Object.keys(FIELD_HELP).forEach(k => {
+  Object.keys(FIELD_HELP).forEach(k=>{
     const g = FIELD_HELP[k].g;
     if(!groups.has(g)) groups.set(g, []);
     groups.get(g).push(k);
   });
-  groups.forEach((keys, g) => {
-    const hd = document.createElement("h3"); hd.className = "refh"; hd.textContent = g;
-    host.appendChild(hd);
-    keys.forEach(k => {
-      const card = document.createElement("div"); card.className = "refcard";
-      const t = document.createElement("div"); t.className = "reft"; t.textContent = FIELD_HELP[k].t;
-      card.append(t, helpContent(k));
-      host.appendChild(card);
+  groups.forEach((keys,g)=>{
+    const h=document.createElement("h3");
+    h.style.cssText="font-size:13px;font-weight:700;margin:18px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--axis)";
+    h.textContent=g; host.appendChild(h);
+    keys.forEach(k=>{
+      const c=document.createElement("div");
+      c.style.cssText="border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:8px;background:var(--surface-2);break-inside:avoid";
+      const t=document.createElement("div");
+      t.style.cssText="font-size:13.5px;font-weight:650;margin-bottom:8px";
+      t.textContent=FIELD_HELP[k].t;
+      c.append(t, helpContent(k)); host.appendChild(c);
     });
   });
-
-  const hd = document.createElement("h3");
-  hd.className = "refh"; hd.textContent = "۴ · ستون‌های خروجی";
-  host.appendChild(hd);
-  const tb = document.createElement("table");
-  const bd = document.createElement("tbody");
-  OUT_HELP.forEach(([n, d]) => {
-    const tr = document.createElement("tr");
-    const a = document.createElement("td"); a.style.fontWeight = "600"; a.style.whiteSpace = "normal"; a.textContent = n;
-    const b = document.createElement("td"); b.style.whiteSpace = "normal"; b.style.color = "var(--ink-2)"; b.textContent = d;
-    tr.append(a, b); bd.appendChild(tr);
-  });
-  tb.appendChild(bd);
-  const wrap = document.createElement("div"); wrap.className = "scroll"; wrap.appendChild(tb);
-  host.appendChild(wrap);
 }
 
 /* =======================================================================
    راه‌اندازی
    ======================================================================= */
+SHIP_ITEMS.forEach(([k,a,c])=> curOptions(document.getElementById(c), COST_CUR));
+buildHeads();
 syncInputs();
 bindInputs();
 renderInputs();
 attachHelp();
-renderHelpReference();
-
-document.getElementById("helpBtn").addEventListener("click", () => {
-  const d = document.getElementById("helpRefWrap");
-  d.open = true;
-  d.scrollIntoView({behavior:"smooth", block:"start"});
-});
+renderHelpRef();
+document.body.classList.toggle("advanced", state.mode === "advanced");
+document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.mode===state.mode)));
+document.querySelectorAll("[data-unit]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.unit===state.unit)));
 document.getElementById("helpClose").addEventListener("click", closeHelp);
-document.getElementById("helpOverlay").addEventListener("click", e => {
-  if(e.target.id === "helpOverlay") closeHelp();     // کلیک بیرون کادر
-});
-addEventListener("keydown", e => {
-  if(e.key === "Escape" && !document.getElementById("helpOverlay").hidden) closeHelp();
-});
-document.querySelectorAll("[data-unit]").forEach(b =>
-  b.setAttribute("aria-pressed", String(b.dataset.unit===state.unit)));
+document.getElementById("helpOverlay").addEventListener("click", e=>{ if(e.target.id==="helpOverlay") closeHelp(); });
+addEventListener("keydown", e=>{ if(e.key==="Escape" && !document.getElementById("helpOverlay").hidden) closeHelp(); });
 render();
 
-/* نمودارها با رنگ‌های تمِ جاری کشیده می‌شوند، پس اگر کاربر حالت تیره داشته
-   باشد رنگ‌های تیره روی کاغذ سفید چاپ می‌شوند. قبل از چاپ تم را روشن می‌کنیم،
-   نمودارها را با عرض کاغذ دوباره می‌کشیم و بعد از چاپ همه‌چیز را برمی‌گردانیم. */
-let themeBeforePrint = null, printing = false;
-
-// مقدار هر ورودی را روی خانه‌اش می‌نویسیم تا CSS بتواند به‌جای
-// کادر فرم، متنِ قابل‌شکستن چاپ کند.
-function syncPrintCells(){
-  document.querySelectorAll("#inBody td").forEach(td => {
-    const i = td.querySelector("input");
-    if(i) td.setAttribute("data-print", i.value);
-  });
-}
-
-function enterPrint(){
-  if(printing) return;
-  printing = true;
-  syncPrintCells();
-  themeBeforePrint = document.documentElement.getAttribute("data-theme");
-  document.documentElement.setAttribute("data-theme", "light");
-  PRINT_W = 700;                      // ≈ عرض مفید A4 با حاشیه ۱۰ میلی‌متر
-  render();
-}
-function exitPrint(){
-  if(!printing) return;
-  printing = false;
-  if(themeBeforePrint) document.documentElement.setAttribute("data-theme", themeBeforePrint);
-  else document.documentElement.removeAttribute("data-theme");
-  PRINT_W = 0;
-  render();
-}
-addEventListener("beforeprint", enterPrint);
-addEventListener("afterprint", exitPrint);
-
 let rt;
-addEventListener("resize", ()=>{ if(printing) return; clearTimeout(rt); rt = setTimeout(render, 140); });
+addEventListener("resize", ()=>{ if(printing) return; clearTimeout(rt); rt=setTimeout(render,140); });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>render());
 </script>
 </body>
